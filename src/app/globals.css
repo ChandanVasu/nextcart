@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+@keyframes marquee-infinite {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee-wrapper {
+  white-space: nowrap;
+  display: flex;
+  gap: 40px;
+  animation: marquee-infinite 50s linear infinite;
+}
+
+.collection-swiper .swiper-pagination {
+  display: none;
+}
+
+.sha-one {
+  box-shadow: rgba(148, 201, 153, 0.12) 0px 1px 3px,
+    rgba(176, 170, 233, 0.24) 0px 1px 2px;
+}
