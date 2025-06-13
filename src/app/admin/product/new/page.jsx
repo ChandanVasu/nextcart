@@ -3,7 +3,6 @@
 import React, { useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Input, Button, Select, SelectItem } from "@heroui/react";
-import TextEditor from "@/components/ui/TextEditor"; // Adjust path as needed
 
 function ProductForm() {
   const searchParams = useSearchParams();
@@ -40,6 +39,11 @@ function ProductForm() {
 
   const handleCategoryChange = (keys) => {
     setCategories(new Set(keys));
+  };
+
+  const handleEditorChange = (event, editor) => {
+    const data = editor.getData();
+    setProductData((prevData) => ({ ...prevData, description: data }));
   };
 
   const addOrUpdateProduct = async () => {
@@ -95,12 +99,6 @@ function ProductForm() {
             errorMessage="Product name is required"
             onChange={(e) => setProductData({ ...productData, title: e.target.value })}
           />
-
-          <div>
-            <label className="text-sm font-medium mb-1 block">Product Descriptions</label>
-            {isInvalid && !productData.description && <div className="text-red-500 text-xs mb-1">Description is required</div>}
-            <TextEditor value={productData.description} onChange={(html) => setProductData({ ...productData, description: html })} />
-          </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
             <Input

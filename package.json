@@ -9,9 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@floating-ui/react": "^0.27.12",
     "@heroui/react": "^2.8.0-beta.7",
-    "mongoose": "^8.15.1",
+    "mongoose": "^8.15.2",
     "next": "15.3.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -26,7 +25,6 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.3.3",
-    "sass": "^1.89.2",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
