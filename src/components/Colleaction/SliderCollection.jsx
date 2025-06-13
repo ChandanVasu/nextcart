@@ -37,7 +37,7 @@ export default function SliderCollection() {
           loop={true}
           pagination={{ clickable: true }}
           autoplay={{ delay: 3000, disableOnInteraction: false }}
-          className="collection-swiper"
+          className="hide-swiper-dots"
           breakpoints={{
             0: { slidesPerView: 3 },
             640: { slidesPerView: 3 },
@@ -48,7 +48,7 @@ export default function SliderCollection() {
           {collections.map((collection) => (
             <SwiperSlide key={collection.id}>
               <div className="flex flex-col items-center text-center">
-                <div className="w-28 h-28 rounded-full border border-blue-300 p-1 flex items-center justify-center shadow-sm transition-all duration-300 hover:shadow-md">
+                <div className="md:w-28 md:h-28 h-20 w-20 rounded-full border border-blue-300 p-1 flex items-center justify-center shadow-sm transition-all duration-300 hover:shadow-md">
                   <img
                     src={collection.image?.src}
                     alt={collection.image?.altText || collection.title}

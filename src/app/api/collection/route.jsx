@@ -1,124 +1,71 @@
-export const dynamic = "force-dynamic";
+// /app/api/admin/collection/route.js
+import dbConnect from "@/lib/dbConnection";
+import mongoose from "mongoose";
 
-const SHOPIFY_DOMAIN = process.env.SHOPIFY_DOMAIN;
-const STOREFRONT_ACCESS_TOKEN = process.env.STOREFRONT_ACCESS_TOKEN;
-
-function flattenEdges(edges = []) {
-  return edges.map((edge) => edge.node);
-}
-
-function transformCollection(collection) {
-  return {
-    ...collection,
-    products: flattenEdges(collection.products?.edges).map((product) => ({
-      ...product,
-      variants: flattenEdges(product.variants?.edges),
-      images: flattenEdges(product.images?.edges),
-    })),
-  };
-}
-
-async function fetchAllCollections() {
-  let collections = [];
-  let hasNextPage = true;
-  let endCursor = null;
-
-  while (hasNextPage) {
-    const query = `
-      {
-        collections(first: 100${endCursor ? `, after: "${endCursor}"` : ""}) {
-          pageInfo {
-            hasNextPage
-            endCursor
-          }
-          edges {
-            node {
-              id
-              title
-              handle
-              description
-              image {
-                src
-                altText
-              }
-              products(first: 10) {
-                edges {
-                  node {
-                    id
-                    title
-                    handle
-                    vendor
-                    availableForSale
-                    images(first: 1) {
-                      edges {
-                        node {
-                          src
-                          altText
-                        }
-                      }
-                    }
-                    variants(first: 1) {
-                      edges {
-                        node {
-                          id
-                          title
-                          price {
-                            amount
-                            currencyCode
-                          }
-                          compareAtPrice {
-                            amount
-                            currencyCode
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    `;
-
-    const res = await fetch(`https://${SHOPIFY_DOMAIN}/api/2023-04/graphql.json`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Shopify-Storefront-Access-Token": STOREFRONT_ACCESS_TOKEN,
-      },
-      body: JSON.stringify({ query }),
-    });
-
-    const json = await res.json();
-    const data = json?.data?.collections;
-
-    if (!data) break;
-
-    const newCollections = data.edges.map((edge) => transformCollection(edge.node));
-    collections.push(...newCollections);
-
-    hasNextPage = data.pageInfo.hasNextPage;
-    endCursor = data.pageInfo.endCursor;
+// Allow flexible schema
+const CollectionSchema = new mongoose.Schema(
+  {},
+  {
+    timestamps: true,
+    versionKey: false,
+    strict: false,
   }
+);
 
-  return collections;
+if (mongoose.models.Collections) {
+  delete mongoose.models.Collections;
 }
+
+const Collection = mongoose.model("Collections", CollectionSchema);
 
 export async function GET() {
+  await dbConnect();
+  const data = await Collection.find({});
+  return Response.json(data);
+}
+
+export async function POST(req) {
   try {
-    const collections = await fetchAllCollections();
-    return new Response(JSON.stringify(collections), {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    await dbConnect();
+    const body = await req.json();
+    const doc = await Collection.create(body);
+    return Response.json(doc, { status: 201 });
   } catch (error) {
-    console.error("Error fetching collections:", error);
-    return new Response(JSON.stringify({ error: "Failed to fetch collections" }), {
-      status: 500,
-    });
+    console.error("POST Error:", error);
+    return Response.json({ error: "Failed to create document" }, { status: 500 });
+  }
+}
+
+export async function PUT(req) {
+  try {
+    await dbConnect();
+    const body = await req.json();
+    const { _id, ...updateData } = body;
+    if (!_id) return Response.json({ error: "_id is required" }, { status: 400 });
+
+    const updated = await Collection.findByIdAndUpdate(_id, updateData, { new: true });
+    if (!updated) return Response.json({ error: "Document not found" }, { status: 404 });
+
+    return Response.json(updated);
+  } catch (error) {
+    console.error("PUT Error:", error);
+    return Response.json({ error: "Failed to update" }, { status: 500 });
+  }
+}
+
+export async function DELETE(req) {
+  try {
+    await dbConnect();
+    const body = await req.json();
+    const { _id } = body;
+    if (!_id) return Response.json({ error: "_id is required" }, { status: 400 });
+
+    const deleted = await Collection.findByIdAndDelete(_id);
+    if (!deleted) return Response.json({ error: "Document not found" }, { status: 404 });
+
+    return Response.json({ message: "Deleted successfully", _id });
+  } catch (error) {
+    console.error("DELETE Error:", error);
+    return Response.json({ error: "Failed to delete" }, { status: 500 });
   }
 }

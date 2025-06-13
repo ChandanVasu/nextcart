@@ -1,7 +1,8 @@
 import React from "react";
-import ProducteOne from "@/components/Product/ProductOne";
+import ProductGrid from "@/components/Product/ProductGrid";
 import SliderOne from "@/components/Slider/SliderOne";
 import SliderCollection from "@/components/Colleaction/SliderCollection";
+import ProductSlider from "@/components/Product/ProductSlider";
 
 export default function Home() {
   return (
@@ -10,7 +11,10 @@ export default function Home() {
       <div className="mt-8">
         <SliderCollection />
       </div>
-      <ProducteOne />
+      <ProductGrid />
+      <div className="mt-8">
+        <ProductSlider />
+      </div>
     </div>
   );
 }

@@ -1,120 +1,89 @@
-export const dynamic = "force-dynamic";
+import dbConnect from "@/lib/dbConnection";
+import mongoose from "mongoose";
 
-const SHOPIFY_DOMAIN = process.env.SHOPIFY_DOMAIN;
-const STOREFRONT_ACCESS_TOKEN = process.env.STOREFRONT_ACCESS_TOKEN;
-
-function flattenEdges(edges = []) {
-  return edges.map((edge) => edge.node);
-}
-
-function transformProduct(product) {
-  return {
-    ...product,
-    variants: flattenEdges(product.variants?.edges),
-    images: flattenEdges(product.images?.edges),
-  };
-}
-
-async function fetchAllProducts() {
-  let products = [];
-  let hasNextPage = true;
-  let endCursor = null;
-
-  while (hasNextPage) {
-    const query = `
-      {
-        products(first: 100${endCursor ? `, after: "${endCursor}"` : ""}) {
-          pageInfo {
-            hasNextPage
-            endCursor
-          }
-          edges {
-            cursor
-            node {
-              id
-              title
-              handle
-              description
-              vendor
-              productType
-              tags
-              availableForSale
-              createdAt
-              updatedAt
-              options {
-                name
-                values
-              }
-              variants(first: 10) {
-                edges {
-                  node {
-                    id
-                    title
-                    sku
-                    availableForSale
-                    quantityAvailable
-                    price {
-                      amount
-                      currencyCode
-                    }
-                    compareAtPrice {
-                      amount
-                      currencyCode
-                    }
-                  }
-                }
-              }
-              images(first: 5) {
-                edges {
-                  node {
-                    src
-                    altText
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    `;
-
-    const res = await fetch(`https://${SHOPIFY_DOMAIN}/api/2023-04/graphql.json`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Shopify-Storefront-Access-Token": STOREFRONT_ACCESS_TOKEN,
-      },
-      body: JSON.stringify({ query }),
-    });
-
-    const json = await res.json();
-    const data = json?.data?.products;
-
-    if (!data) break;
-
-    const newProducts = data.edges.map((edge) => transformProduct(edge.node));
-    products.push(...newProducts);
-
-    hasNextPage = data.pageInfo.hasNextPage;
-    endCursor = data.pageInfo.endCursor;
+// ✅ Define schema with strict: false to allow any fields
+const ProductSchema = new mongoose.Schema(
+  {},
+  {
+    timestamps: true,
+    versionKey: false,
+    strict: false,
   }
+);
 
-  return products;
+// ✅ Fix model reuse during hot reload
+if (mongoose.models.Products) {
+  delete mongoose.models.Products;
 }
 
+const Product = mongoose.model("Products", ProductSchema);
+
+// ✅ GET: Fetch all products
 export async function GET() {
+  await dbConnect();
+  const products = await Product.find({});
+  return Response.json(products);
+}
+
+// ✅ POST: Create a new product
+export async function POST(req) {
   try {
-    const products = await fetchAllProducts();
-    return new Response(JSON.stringify(products), {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    await dbConnect();
+    const body = await req.json();
+    const product = await Product.create(body);
+    return Response.json(product, { status: 201 });
   } catch (error) {
-    console.error("Error fetching products:", error);
-    return new Response(JSON.stringify({ error: "Failed to fetch products" }), {
-      status: 500,
+    console.error("POST Error:", error);
+    return Response.json({ error: "Failed to create product" }, { status: 500 });
+  }
+}
+
+// ✅ PUT: Update a product by _id
+export async function PUT(req) {
+  try {
+    await dbConnect();
+    const body = await req.json();
+    const { _id, ...updateData } = body;
+
+    if (!_id) {
+      return Response.json({ error: "_id is required for update" }, { status: 400 });
+    }
+
+    const updatedProduct = await Product.findByIdAndUpdate(_id, updateData, {
+      new: true,
     });
+
+    if (!updatedProduct) {
+      return Response.json({ error: "Product not found" }, { status: 404 });
+    }
+
+    return Response.json(updatedProduct);
+  } catch (error) {
+    console.error("PUT Error:", error);
+    return Response.json({ error: "Failed to update product" }, { status: 500 });
+  }
+}
+
+// ✅ DELETE: Delete a product by _id
+export async function DELETE(req) {
+  try {
+    await dbConnect();
+    const body = await req.json();
+    const { _id } = body;
+
+    if (!_id) {
+      return Response.json({ error: "_id is required for delete" }, { status: 400 });
+    }
+
+    const deletedProduct = await Product.findByIdAndDelete(_id);
+
+    if (!deletedProduct) {
+      return Response.json({ error: "Product not found" }, { status: 404 });
+    }
+
+    return Response.json({ message: "Product deleted", _id });
+  } catch (error) {
+    console.error("DELETE Error:", error);
+    return Response.json({ error: "Failed to delete product" }, { status: 500 });
   }
 }

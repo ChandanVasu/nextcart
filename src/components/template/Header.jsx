@@ -1,27 +1,28 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { FaSearch } from "react-icons/fa";
+import Link from "next/link";
+import { FaUser, FaHeart, FaShoppingCart, FaBars, FaTimes } from "react-icons/fa";
 
 export default function FullHeader() {
   const [menuItems, setMenuItems] = useState([]);
+  const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     async function fetchMenus() {
       try {
-        const res = await fetch("/api/admin/menu"); // Adjust this to your actual API route
+        const res = await fetch("/api/admin/menu");
         if (!res.ok) throw new Error("Failed to fetch menus");
         const menus = await res.json();
 
-        // Find the menu named "Main Menu"
         const mainMenu = menus.find((menu) => menu.name === "Main Menu");
         if (mainMenu && Array.isArray(mainMenu.items)) {
           setMenuItems(mainMenu.items);
         } else {
-          setMenuItems([]); // fallback empty
+          setMenuItems([]);
         }
       } catch (err) {
         console.error("Error loading menus:", err);
-        setMenuItems([]); // fallback empty
+        setMenuItems([]);
       }
     }
 
@@ -29,48 +30,53 @@ export default function FullHeader() {
   }, []);
 
   return (
-    <header className="w-full text-sm font-sans">
-      {/* Top Scroll Bar */}
-      <div className="bg-purple-600 overflow-hidden text-white py-2">
-        <div className="marquee-wrapper whitespace-nowrap animate-marquee">
-          {Array(100)
-            .fill("⚡ SUMMER SALE: UP TO 70% OFF SELECTED ITEMS")
-            .map((text, index) => (
-              <span key={index} className="mx-4 font-medium">
-                {text}
-              </span>
-            ))}
+    <header className="w-full bg-white shadow-sm sticky top-0 z-50 border-b border-gray-200">
+      <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-4 md:py-3">
+        {/* Logo */}
+        <Link href="/" className="text-2xl font-extrabold text-gray-900 tracking-tight">
+          Shopead
+        </Link>
+
+        {/* Desktop Nav */}
+        <nav className="hidden md:flex gap-6 items-center text-sm font-medium text-gray-700">
+          {menuItems.map(({ title, url }, i) => (
+            <Link key={i} href={url} className="hover:text-black transition-colors duration-200">
+              {title}
+            </Link>
+          ))}
+        </nav>
+
+        {/* Icons */}
+        <div className="flex items-center gap-5 text-gray-600">
+          <Link href="/account" className="hover:text-black">
+            <FaUser size={18} />
+          </Link>
+          <Link href="/wishlist" className="relative hover:text-black">
+            <FaHeart size={18} />
+            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-1">3</span>
+          </Link>
+          <Link href="/cart" className="relative hover:text-black">
+            <FaShoppingCart size={18} />
+            <span className="absolute -top-2 -right-2 bg-green-600 text-white text-xs rounded-full px-1">2</span>
+          </Link>
+
+          {/* Mobile Menu Toggle */}
+          <button className="md:hidden text-gray-700" onClick={() => setMobileMenuOpen(!isMobileMenuOpen)}>
+            {isMobileMenuOpen ? <FaTimes size={20} /> : <FaBars size={20} />}
+          </button>
         </div>
       </div>
 
-      {/* Main Navigation */}
-      <div className="bg-white shadow sticky top-0 z-50">
-        <div className="mx-auto flex items-center justify-between h-16 px-4">
-          {/* Logo */}
-          <div className="text-xl sm:text-2xl font-bold tracking-wide text-black">NextCart</div>
-
-          {/* Navigation */}
-          <nav className="flex flex-wrap gap-4 items-center text-sm font-medium text-gray-700">
-            {menuItems.length > 0 ? (
-              menuItems.map(({ title, url }, i) => (
-                <a key={i} href={url} className="relative hover:text-black transition">
-                  {title}
-                </a>
-              ))
-            ) : (
-              <div className="text-gray-400">Loading menu...</div>
-            )}
-          </nav>
-
-          {/* Search */}
-          <div className="hidden sm:flex items-center border border-gray-300 rounded overflow-hidden">
-            <input type="text" placeholder="Search the store" className="px-3 py-1 outline-none text-sm w-40" />
-            <button className="bg-black text-white p-2">
-              <FaSearch />
-            </button>
-          </div>
+      {/* Mobile Nav */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden bg-white border-t border-gray-100 px-4 py-4 space-y-3">
+          {menuItems.map(({ title, url }, i) => (
+            <Link key={i} href={url} className="block text-gray-700 hover:text-black">
+              {title}
+            </Link>
+          ))}
         </div>
-      </div>
+      )}
     </header>
   );
 }

@@ -26,7 +26,7 @@ export default function StyleOne() {
   ];
 
   return (
-    <div className="w-full">
+    <div className="w-full mt-1">
       <Swiper
         modules={[Autoplay, Pagination, Navigation]}
         slidesPerView={1}

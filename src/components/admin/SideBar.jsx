@@ -24,14 +24,14 @@ const SideBar = () => {
             <p className="font-medium text-sm">Home</p>
           </li>
         </Link>
-        <Link href="/admin/user">
+        <Link href="/admin/product">
           <li
             className={`flex gap-2 items-center justify-start px-3 py-1 rounded-md text-base ${
-              pathname.startsWith("/admin/user") ? "bg-white" : "hover:bg-white/60"
+              pathname.startsWith("/admin/product") ? "bg-white" : "hover:bg-white/60"
             }`}
           >
             <FaUserAlt />
-            <p className="font-medium text-sm">User</p>
+            <p className="font-medium text-sm">Product</p>
           </li>
         </Link>
         <Link href="/admin/posts">
