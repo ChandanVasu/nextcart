@@ -3,7 +3,7 @@
 import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
-import { Input, Select, SelectItem } from "@heroui/react";
+import { Input, Select, SelectItem, Textarea } from "@heroui/react";
 import CustomButton from "@/components/block/CustomButton";
 import ImageSelector from "@/components/block/ImageSelector";
 import { FaPlus } from "react-icons/fa";
@@ -20,7 +20,7 @@ function ProductForm() {
   const [addLoading, setAddLoading] = useState(false);
   const [isInvalid, setIsInvalid] = useState(false);
   const [categories, setCategories] = useState(new Set());
-  const [fetchingCollection, setFetchingCollection] = useState([]); // You can fetch collections later
+  const [fetchingCollection, setFetchingCollection] = useState([]);
   const [currencySymbol] = useState("\u20B9");
   const [isImageSelectorOpen, setIsImageSelectorOpen] = useState(false);
   const [selectedImages, setSelectedImages] = useState([]);
@@ -29,9 +29,7 @@ function ProductForm() {
   const fetchCollection = async () => {
     setIsFetching(true);
     try {
-      const response = await fetch(`/api/collection`, {
-        cache: "reload",
-      });
+      const response = await fetch(`/api/collection`, { cache: "reload" });
       const data = await response.json();
       if (response.ok) {
         setFetchingCollection(data);
@@ -50,6 +48,7 @@ function ProductForm() {
   const [productData, setProductData] = useState({
     title: "",
     description: "",
+    shortDescription: "", // ✅ New field
     regularPrice: "",
     salePrice: "",
     sku: "",
@@ -68,7 +67,6 @@ function ProductForm() {
   const stockStatusOptions = ["In Stock", "Out of Stock"];
   const productLabelOptions = ["Trending", "New", "Hot", "Best Seller", "Limited Edition", "Sale", "Exclusive"];
 
-  // 🟢 Prefill product data if updating
   useEffect(() => {
     const fetchProductById = async () => {
       if (!isUpdate || !productId) return;
@@ -80,6 +78,7 @@ function ProductForm() {
         setProductData({
           title: data.title || "",
           description: data.description || "",
+          shortDescription: data.shortDescription || "", // ✅ Prefill short description
           regularPrice: data.regularPrice || "",
           salePrice: data.salePrice || "",
           sku: data.sku || "",
@@ -134,9 +133,7 @@ function ProductForm() {
         throw new Error(`Error: ${response.statusText}`);
       }
 
-      // ✅ Optional: Toast or redirect
-      // toast.success("Product saved");
-      // router.push("/admin/products");
+      // Optional: toast.success("Product saved"); router.push("/admin/products");
     } catch (error) {
       console.error("❌ Error saving product:", error);
     } finally {
@@ -190,6 +187,16 @@ function ProductForm() {
             />
           </div>
 
+          {/* ✅ Short Description */}
+          <Textarea
+            label="Short Description"
+            labelPlacement="outside"
+            placeholder="Enter short product summary"
+            value={productData.shortDescription}
+            onChange={(e) => setProductData({ ...productData, shortDescription: e.target.value })}
+          />
+
+          {/* Full Description */}
           <TextEditor value={productData.description} onChange={(value) => setProductData((prev) => ({ ...prev, description: value }))} />
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">

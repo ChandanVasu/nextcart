@@ -23,6 +23,11 @@ export default function StyleOne() {
       alt: "Trouser Banner",
       url: "#",
     },
+    {
+      img: "https://www.beyoung.in/api/catalog/HomePage2025/rewind-banner-desktop-view.jpg",
+      alt: "Jeans Banner",
+      url: "#",
+    }
   ];
 
   return (

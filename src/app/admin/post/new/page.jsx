@@ -3,12 +3,22 @@
 import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
-import { Input, Select, SelectItem } from "@heroui/react";
+import { Input, Select, SelectItem, Textarea } from "@heroui/react";
 import CustomButton from "@/components/block/CustomButton";
 import ImageSelector from "@/components/block/ImageSelector";
 import { FaPlus } from "react-icons/fa";
 
+// Dynamically import the text editor
 const TextEditor = dynamic(() => import("@/components/block/TextEditor"), { ssr: false });
+
+// Utility to create a slug from text
+const slugify = (text) =>
+  text
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/--+/g, "-");
 
 function PostForm() {
   const searchParams = useSearchParams();
@@ -21,10 +31,12 @@ function PostForm() {
   const [isInvalid, setIsInvalid] = useState(false);
   const [isImageSelectorOpen, setIsImageSelectorOpen] = useState(false);
   const [selectedImages, setSelectedImages] = useState([]);
+  const [isSlugEdited, setIsSlugEdited] = useState(false); // Track if user manually changed slug
 
   const [postData, setPostData] = useState({
     title: "",
     content: "",
+    shortDescription: "",
     tags: "",
     author: "",
     status: "Published",
@@ -35,7 +47,7 @@ function PostForm() {
   });
 
   const statusOptions = ["Published", "Draft", "Archived"];
-  const categories = ["AI", "Marketing", "Tech", "Design", "Tutorial"];
+  const categories = ["Blog", "Page"];
 
   useEffect(() => {
     const fetchPostById = async () => {
@@ -43,13 +55,13 @@ function PostForm() {
 
       try {
         const res = await fetch(`/api/data?collection=Posts&id=${postId}`);
-        console.log("Fetching post data from API:", res);
         const dataRes = await res.json();
-
         const data = dataRes?.[0] || {};
+
         setPostData({
           title: data.title || "",
           content: data.content || "",
+          shortDescription: data.shortDescription || "",
           tags: data.tags || "",
           author: data.author || "",
           status: data.status || "Published",
@@ -69,7 +81,6 @@ function PostForm() {
   }, [isUpdate, postId]);
 
   const handlePostSave = async () => {
-    console.log("Saving post data:", postData);
     setAddLoading(true);
 
     if (!postData.title) {
@@ -98,6 +109,7 @@ function PostForm() {
         throw new Error("Error saving post");
       }
 
+      // Optional: toast or router
       // router.push("/admin/posts");
     } catch (err) {
       console.error("❌ Error saving post:", err);
@@ -126,7 +138,14 @@ function PostForm() {
             value={postData.title}
             isInvalid={isInvalid && !postData.title}
             errorMessage="Title is required"
-            onChange={(e) => setPostData({ ...postData, title: e.target.value })}
+            onChange={(e) => {
+              const newTitle = e.target.value;
+              setPostData((prev) => ({
+                ...prev,
+                title: newTitle,
+                slug: isSlugEdited ? prev.slug : slugify(newTitle),
+              }));
+            }}
           />
 
           {/* Images */}
@@ -153,6 +172,16 @@ function PostForm() {
             />
           </div>
 
+          {/* Short Description */}
+          <Textarea
+            label="Short Description"
+            labelPlacement="outside"
+            placeholder="Enter a brief summary of the post"
+            value={postData.shortDescription}
+            onChange={(e) => setPostData({ ...postData, shortDescription: e.target.value })}
+          />
+
+          {/* Full Content */}
           <TextEditor value={postData.content} onChange={(value) => setPostData({ ...postData, content: value })} />
         </div>
 
@@ -184,13 +213,17 @@ function PostForm() {
             ))}
           </Select>
 
+          {/* Slug Field (auto or manual) */}
           <Input
             label="Slug"
             labelPlacement="outside"
             size="sm"
             placeholder="post-title-slug"
             value={postData.slug}
-            onChange={(e) => setPostData({ ...postData, slug: e.target.value })}
+            onChange={(e) => {
+              setIsSlugEdited(true);
+              setPostData({ ...postData, slug: e.target.value });
+            }}
           />
 
           <Input

@@ -3,7 +3,7 @@
 @source '../../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}';
 
 :root {
-  --font-family-base: var(--font-poppins);
+  --font-family-base: var(--font-rubik);
 }
 
 body {
@@ -37,14 +37,14 @@ body {
 /* styles/globals.css or your component CSS */
 .sun-editor {
   border-radius: 8px;
-  border: 1px solid #e5e7eb; /* Tailwind gray-200 */
+  border-bottom: none !important;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   min-height: 500px;
 }
 
 .sun-editor .se-toolbar {
   background-color: #f9fafb; /* light gray */
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: none !important;
   border-radius: 8px 8px 0 0;
 }
 

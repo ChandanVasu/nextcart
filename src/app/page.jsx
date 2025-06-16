@@ -1,10 +1,18 @@
 import React from "react";
-import Home from "@/components/template/Home";
+import ProductGrid from "@/components/Product/ProductGrid";
+import Slider from "@/components/Slider/Slider";
+import SliderCollection from "@/components/Colleaction/SliderCollection";
 
-export default function Page() {
+export default function Home() {
   return (
     <div>
-      <Home />
+      <div className="mt-1">
+        <Slider />
+      </div>
+      <div className="mt-8">
+        <SliderCollection />
+      </div>
+      <ProductGrid />
     </div>
   );
 }

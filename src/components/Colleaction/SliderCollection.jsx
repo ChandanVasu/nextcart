@@ -29,7 +29,7 @@ export default function SliderCollection() {
 
   return (
     <section className="">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <Swiper
           modules={[Navigation, Pagination, Autoplay]}
           spaceBetween={20}
@@ -49,11 +49,7 @@ export default function SliderCollection() {
             <SwiperSlide key={collection.id}>
               <div className="flex flex-col items-center text-center">
                 <div className="w-28 h-28 rounded-full border border-blue-300 p-1 flex items-center justify-center shadow-sm transition-all duration-300 hover:shadow-md">
-                  <img
-                    src={collection.image?.src}
-                    alt={collection.image?.altText || collection.title}
-                    className="w-full h-full rounded-full object-cover object-center"
-                  />
+                  <img src={collection.image} alt={collection.title} className="w-full h-full rounded-full object-cover object-center" />
                 </div>
                 <p className="mt-2 text-sm font-medium text-gray-800 line-clamp-1">{collection.title}</p>
               </div>
