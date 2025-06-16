@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from "@heroui/modal";
-import { Button, Image, Spinner } from "@heroui/react";
+import { Button, Spinner } from "@heroui/react";
 import { FaCheckCircle } from "react-icons/fa";
 
 const ImageSelector = ({ isOpen, onClose, onSelectImages, selectType = "multiple" }) => {
