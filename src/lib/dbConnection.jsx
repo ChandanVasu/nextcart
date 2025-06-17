@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const MONGODB_URI = `mongodb+srv://${process.env.MONGODB_USER}:${process.env.MONGODB_PASSWORD}@${process.env.MONGODB_HOST}/NextCart?retryWrites=true&w=majority`;
+const MONGODB_URI = `mongodb+srv://${process.env.MONGODB_USER}:${process.env.MONGODB_PASSWORD}@${process.env.MONGODB_HOST}/NextCart`;
 
 if (!MONGODB_URI) {
   throw new Error("Please define MONGODB_URI in your .env.local");

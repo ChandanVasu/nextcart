@@ -1,21 +1,26 @@
-// /app/api/admin/image/route.js
+import { v2 as cloudinary } from "cloudinary";
+import { writeFile } from "fs/promises";
+import path from "path";
+import { existsSync, mkdirSync } from "fs";
 import dbConnect from "@/lib/dbConnection";
 import mongoose from "mongoose";
 
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+// MongoDB Schema
 const ImageSchema = new mongoose.Schema(
-  {},
   {
-    timestamps: true,
-    versionKey: false,
-    strict: false,
-  }
+    name: String,
+    url: String,
+  },
+  { timestamps: true, versionKey: false }
 );
 
-if (mongoose.models.Images) {
-  delete mongoose.models.Images;
-}
-
-const Image = mongoose.model("Images", ImageSchema);
+const Image = mongoose.models.Images || mongoose.model("Images", ImageSchema);
 
 export async function GET() {
   await dbConnect();
@@ -24,14 +29,51 @@ export async function GET() {
 }
 
 export async function POST(req) {
+  await dbConnect();
+  const contentType = req.headers.get("content-type");
+
+  // Handle file upload from FormData
+  if (contentType && contentType.includes("multipart/form-data")) {
+    const formData = await req.formData();
+    const file = formData.get("file");
+
+    if (!file) {
+      return Response.json({ error: "No file found" }, { status: 400 });
+    }
+
+    const buffer = Buffer.from(await file.arrayBuffer());
+
+    const tempDir = path.join(process.cwd(), "tmp");
+    if (!existsSync(tempDir)) mkdirSync(tempDir);
+
+    const filePath = path.join(tempDir, file.name);
+    await writeFile(filePath, buffer);
+
+    try {
+      const uploadResult = await cloudinary.uploader.upload(filePath, {
+        folder: process.env.CLOUDINARY_FOLDER,
+      });
+
+      const savedImage = await Image.create({
+        name: file.name,
+        url: uploadResult.secure_url,
+      });
+
+      return Response.json(savedImage, { status: 201 });
+    } catch (error) {
+      console.error("Cloudinary Upload Error:", error);
+      return Response.json({ error: "Upload failed" }, { status: 500 });
+    }
+  }
+
+  // Handle JSON-based POST (manual creation)
   try {
-    await dbConnect();
     const body = await req.json();
     const image = await Image.create(body);
     return Response.json(image, { status: 201 });
   } catch (error) {
-    console.error("Image POST Error:", error);
-    return Response.json({ error: "Failed to upload image" }, { status: 500 });
+    console.error("Image JSON POST Error:", error);
+    return Response.json({ error: "Failed to create image" }, { status: 500 });
   }
 }
 
@@ -63,6 +105,17 @@ export async function DELETE(req) {
 
     const deletedImage = await Image.findByIdAndDelete(_id);
     if (!deletedImage) return Response.json({ error: "Image not found" }, { status: 404 });
+
+    // Optional: Also delete from Cloudinary
+    const publicId = deletedImage.url.split("/").slice(-1)[0].split(".")[0]; // extract file name (no extension)
+    const folder = process.env.CLOUDINARY_FOLDER;
+    const cloudinaryId = `${folder}/${publicId}`;
+
+    try {
+      await cloudinary.uploader.destroy(cloudinaryId);
+    } catch (err) {
+      console.warn("Cloudinary delete failed:", err.message);
+    }
 
     return Response.json({ message: "Image deleted", _id });
   } catch (error) {

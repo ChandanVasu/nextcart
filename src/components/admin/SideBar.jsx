@@ -10,6 +10,10 @@ import { BiSolidCollection } from "react-icons/bi";
 import { FaCcMastercard, FaUserFriends, FaChartLine, FaPlus } from "react-icons/fa";
 import { BsCartCheckFill } from "react-icons/bs";
 import { FaBlog } from "react-icons/fa6";
+import { LuMessageSquare } from "react-icons/lu";
+import { IoLayers } from "react-icons/io5";
+
+
 
 const SideBar = () => {
   const pathname = usePathname();
@@ -25,6 +29,8 @@ const SideBar = () => {
     { href: "/admin/post/new", icon: <FaPlus />, label: "New Post" },
     { href: "/admin/orders", icon: <BsCartCheckFill />, label: "Orders" },
     { href: "/admin/customers", icon: <FaUserFriends />, label: "Customers" },
+    { href: "/admin/slider", icon: <IoLayers />, label: "Slider" },
+    { href: "/admin/news-latter", icon: <LuMessageSquare />, label: "News Letter" },
     { href: "/admin/analytics", icon: <FaChartLine />, label: "Analytics" },
     { href: "/admin/settings", icon: <MdOutlineSettings />, label: "Settings" },
   ];

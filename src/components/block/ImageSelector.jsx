@@ -17,7 +17,7 @@ const ImageSelector = ({ isOpen, onClose, onSelectImages, selectType = "multiple
       setLoading(true);
       const res = await fetch("/api/image");
       const data = await res.json();
-      setImages(data); // Expects array of { _id, url, name }
+      setImages(data); // expects [{ _id, url, name }]
     } catch (err) {
       console.error("Failed to fetch images:", err);
     } finally {
@@ -30,47 +30,32 @@ const ImageSelector = ({ isOpen, onClose, onSelectImages, selectType = "multiple
   };
 
   const handleFileChange = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+    const files = Array.from(e.target.files);
+    if (!files.length) return;
 
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET);
-    formData.append("folder", process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER); 
+    setUploading(true);
 
     try {
-      setUploading(true);
+      const uploaded = [];
 
-      const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+      for (const file of files) {
+        const formData = new FormData();
+        formData.append("file", file);
 
-      // Step 1: Upload to Cloudinary
-      const cloudRes = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
-        method: "POST",
-        body: formData,
-      });
+        const res = await fetch("/api/image", {
+          method: "POST",
+          body: formData,
+        });
 
-      const cloudData = await cloudRes.json();
+        if (!res.ok) throw new Error("Upload failed");
 
-      if (!cloudData?.secure_url) {
-        throw new Error("Cloudinary upload failed");
+        const savedImage = await res.json();
+        uploaded.push(savedImage);
       }
 
-      // Step 2: Save image metadata to your backend
-      const backendRes = await fetch("/api/image", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          url: cloudData.secure_url,
-          name: file.name,
-        }),
-      });
-
-      const savedImage = await backendRes.json();
-      setImages((prev) => [savedImage, ...prev]);
+      setImages((prev) => [...uploaded, ...prev]);
     } catch (error) {
-      console.error("Image upload error:", error);
+      console.error("Multiple image upload error:", error);
     } finally {
       setUploading(false);
     }
@@ -95,6 +80,33 @@ const ImageSelector = ({ isOpen, onClose, onSelectImages, selectType = "multiple
     setSelected(new Set());
   };
 
+  const handleDeleteImage = async (_id) => {
+    // Force a microtask to complete before blocking UI with confirm
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    try {
+      const res = await fetch("/api/image", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ _id }),
+      });
+
+      if (!res.ok) throw new Error("Delete failed");
+
+      setImages((prev) => prev.filter((img) => img._id !== _id));
+      setSelected((prev) => {
+        const newSet = new Set(prev);
+        const deleted = images.find((img) => img._id === _id);
+        if (deleted) newSet.delete(deleted.url);
+        return newSet;
+      });
+    } catch (error) {
+      console.error("Image delete error:", error);
+    }
+  };
+
   useEffect(() => {
     if (isOpen) fetchImages();
   }, [isOpen]);
@@ -105,7 +117,7 @@ const ImageSelector = ({ isOpen, onClose, onSelectImages, selectType = "multiple
         <ModalHeader className="flex justify-between items-center">
           <span>Select {selectType === "multiple" ? "Images" : "Image"}</span>
           <div className="flex items-center gap-2">
-            <input type="file" accept="image/*" ref={fileInputRef} style={{ display: "none" }} onChange={handleFileChange} />
+            <input type="file" accept="image/*" multiple ref={fileInputRef} style={{ display: "none" }} onChange={handleFileChange} />
             <Button size="sm" className="bg-black text-white" onPress={triggerFileSelect} isLoading={uploading}>
               Upload
             </Button>
@@ -122,17 +134,26 @@ const ImageSelector = ({ isOpen, onClose, onSelectImages, selectType = "multiple
               {images.map((image) => {
                 const isSelected = selected.has(image.url);
                 return (
-                  <div
-                    key={image._id}
-                    onClick={() => handleClickImage(image.url)}
-                    className="relative rounded-lg overflow-hidden cursor-pointer shadow-sm"
-                  >
-                    <img src={image.url} alt={image.name} className="object-contain object-center w-full h-[150px] rounded-lg" />
+                  <div key={image._id} className="relative rounded-lg overflow-hidden group">
+                    <img
+                      src={image.url}
+                      alt={image.name}
+                      onClick={() => handleClickImage(image.url)}
+                      className="object-contain object-center w-full h-[150px] rounded-lg cursor-pointer"
+                    />
+
                     {selectType === "multiple" && isSelected && (
                       <div className="absolute top-2 right-2 z-50 text-green-500 bg-white rounded-full p-1 shadow-md">
                         <FaCheckCircle className="text-lg" />
                       </div>
                     )}
+
+                    <button
+                      className="absolute top-2 left-2 text-white bg-red-600 rounded-full cursor-pointer text-xs px-2 py-1 hidden group-hover:block"
+                      onClick={() => handleDeleteImage(image._id)}
+                    >
+                      Delete
+                    </button>
                   </div>
                 );
               })}

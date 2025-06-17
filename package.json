@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@heroui/react": "^2.8.0-beta.7",
+    "cloudinary": "^2.6.1",
+    "framer-motion": "^12.18.1",
     "jose": "^6.0.11",
     "mongoose": "^8.15.2",
     "next": "15.3.3",
