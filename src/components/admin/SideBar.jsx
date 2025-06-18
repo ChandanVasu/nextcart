@@ -12,8 +12,7 @@ import { BsCartCheckFill } from "react-icons/bs";
 import { FaBlog } from "react-icons/fa6";
 import { LuMessageSquare } from "react-icons/lu";
 import { IoLayers } from "react-icons/io5";
-
-
+import { TiThMenu } from "react-icons/ti";
 
 const SideBar = () => {
   const pathname = usePathname();
@@ -29,6 +28,7 @@ const SideBar = () => {
     { href: "/admin/post/new", icon: <FaPlus />, label: "New Post" },
     { href: "/admin/orders", icon: <BsCartCheckFill />, label: "Orders" },
     { href: "/admin/customers", icon: <FaUserFriends />, label: "Customers" },
+    { href: "/admin/menu", icon: <TiThMenu />, label: "New Menu" },
     { href: "/admin/slider", icon: <IoLayers />, label: "Slider" },
     { href: "/admin/news-latter", icon: <LuMessageSquare />, label: "News Letter" },
     { href: "/admin/analytics", icon: <FaChartLine />, label: "Analytics" },

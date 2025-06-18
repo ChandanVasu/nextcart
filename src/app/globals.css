@@ -30,6 +30,22 @@ body {
   display: none;
 }
 
+.swiper-pagination-bullet {
+  width: 24px;
+  height: 4px;
+  border-radius: 2px;
+  background-color: #d1d5db; /* Tailwind gray-300 */
+  opacity: 0.6;
+  margin: 0 4px !important;
+  transition: all 0.3s ease;
+}
+
+.swiper-pagination-bullet-active {
+  background-color: #facc15; /* Tailwind yellow-400 */
+  opacity: 1;
+  width: 32px;
+}
+
 .sha-one {
   box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 2px 0px;
 }

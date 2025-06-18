@@ -169,11 +169,11 @@ function ProductForm() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
               {selectedImages.map((img, index) => (
                 <div key={index} className="relative group">
-                  <img src={img} alt={`Selected ${index}`} className="w-full h-60 object-cover rounded-lg shadow-sm" />
+                  <img src={img} alt={`Selected ${index}`} className="w-full h-40 object-cover rounded-lg shadow-sm" />
                 </div>
               ))}
               <div
-                className="flex items-center justify-center w-full h-60 rounded-lg border border-dashed border-gray-300 cursor-pointer hover:bg-gray-100"
+                className="flex items-center justify-center w-full h-40 rounded-lg border border-dashed border-gray-300 cursor-pointer hover:bg-gray-100"
                 onClick={() => setIsImageSelectorOpen(true)}
               >
                 <FaPlus className="text-gray-500" />

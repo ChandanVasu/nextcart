@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
@@ -10,6 +11,15 @@ const COLLECTION = "slider-image";
 
 export default function StyleOne() {
   const [images, setImages] = useState([]);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    // Media query listener
+    const checkScreen = () => setIsMobile(window.innerWidth < 768);
+    checkScreen(); // initial check
+    window.addEventListener("resize", checkScreen);
+    return () => window.removeEventListener("resize", checkScreen);
+  }, []);
 
   useEffect(() => {
     const fetchSliderImages = async () => {
@@ -17,7 +27,6 @@ export default function StyleOne() {
         const res = await fetch(`/api/data?collection=${COLLECTION}`);
         const data = await res.json();
         if (res.ok) {
-          // Sort newest first
           const sorted = data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
           setImages(sorted);
         }
@@ -29,7 +38,10 @@ export default function StyleOne() {
     fetchSliderImages();
   }, []);
 
-  if (images.length === 0) return null;
+  // Filter images based on screen
+  const filteredImages = images.filter((img) => (isMobile ? img.displayFor === "mobile" : img.displayFor === "desktop"));
+
+  if (filteredImages.length === 0) return null;
 
   return (
     <div className="w-full">
@@ -42,9 +54,9 @@ export default function StyleOne() {
           disableOnInteraction: false,
         }}
         pagination={{ clickable: true }}
-        className="md:max-h-[600px] max-h-[300px]"
+        className={isMobile ? "max-h-[600px]" : "max-h-[600px]"}
       >
-        {images.map((item, index) => (
+        {filteredImages.map((item, index) => (
           <SwiperSlide key={item._id || index}>
             <a href={item.url || "#"}>
               <img src={item.image} alt={item.title || `Slide ${index + 1}`} className="w-full h-full object-contain" />

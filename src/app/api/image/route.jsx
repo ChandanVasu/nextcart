@@ -43,15 +43,20 @@ export async function POST(req) {
 
     const buffer = Buffer.from(await file.arrayBuffer());
 
-    const tempDir = path.join(process.cwd(), "tmp");
-    if (!existsSync(tempDir)) mkdirSync(tempDir);
-
-    const filePath = path.join(tempDir, file.name);
-    await writeFile(filePath, buffer);
-
     try {
-      const uploadResult = await cloudinary.uploader.upload(filePath, {
-        folder: process.env.CLOUDINARY_FOLDER,
+      const uploadResult = await new Promise((resolve, reject) => {
+        cloudinary.uploader
+          .upload_stream(
+            {
+              folder: process.env.CLOUDINARY_FOLDER,
+              resource_type: "image",
+            },
+            (error, result) => {
+              if (error) reject(error);
+              else resolve(result);
+            }
+          )
+          .end(buffer); // send buffer directly
       });
 
       const savedImage = await Image.create({

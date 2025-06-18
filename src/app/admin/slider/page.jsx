@@ -1,7 +1,21 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
-import { Button, Input, Spinner, Pagination, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, User } from "@heroui/react";
+import {
+  Button,
+  Input,
+  Spinner,
+  Pagination,
+  Table,
+  TableHeader,
+  TableColumn,
+  TableBody,
+  TableRow,
+  TableCell,
+  User,
+  Select,
+  SelectItem,
+} from "@heroui/react";
 import { MdDelete } from "react-icons/md";
 import { RiEditCircleFill } from "react-icons/ri";
 import SingleImageSelect from "@/components/block/ImageSelector";
@@ -15,6 +29,8 @@ export default function SliderImagePage() {
   const [title, setTitle] = useState("");
   const [image, setImage] = useState("");
   const [url, setUrl] = useState("");
+  const [displayFor, setDisplayFor] = useState("desktop");
+
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
@@ -49,7 +65,6 @@ export default function SliderImagePage() {
     if (!title || !image || !url) {
       setTitleError(!title);
       setUrlError(!url);
-      alert("Title, image, and URL are required.");
       return;
     }
 
@@ -62,6 +77,7 @@ export default function SliderImagePage() {
         title,
         image,
         url,
+        displayFor,
       };
 
       const res = await fetch("/api/data", {
@@ -114,6 +130,7 @@ export default function SliderImagePage() {
     setTitle("");
     setImage("");
     setUrl("");
+    setDisplayFor("desktop");
     setSelectedId(null);
     setDeleteModalOpen(false);
   };
@@ -172,6 +189,16 @@ export default function SliderImagePage() {
                 if (urlError) setUrlError(false);
               }}
             />
+            <Select
+              label="Display For"
+              size="sm"
+              selectedKeys={[displayFor]}
+              onSelectionChange={(key) => setDisplayFor(key.currentKey || "desktop")}
+              labelPlacement="outside"
+            >
+              <SelectItem key="desktop">Desktop</SelectItem>
+              <SelectItem key="mobile">Mobile</SelectItem>
+            </Select>
             <div
               onClick={() => setModalOpen(true)}
               className={`flex justify-center items-center border-2 border-dashed rounded-md cursor-pointer ${!image ? "h-[200px]" : ""}`}
@@ -200,6 +227,7 @@ export default function SliderImagePage() {
             <Table aria-label="Slider Image Table" shadow="none">
               <TableHeader>
                 <TableColumn>Image</TableColumn>
+                <TableColumn>Display</TableColumn>
                 <TableColumn>Created At</TableColumn>
                 <TableColumn>Actions</TableColumn>
               </TableHeader>
@@ -215,7 +243,7 @@ export default function SliderImagePage() {
                         name={item.title}
                       />
                     </TableCell>
-          
+                    <TableCell className="capitalize">{item.displayFor || "desktop"}</TableCell>
                     <TableCell>
                       {item.createdAt
                         ? new Date(item.createdAt).toLocaleDateString("en-IN", {
@@ -233,6 +261,7 @@ export default function SliderImagePage() {
                             setTitle(item.title);
                             setImage(item.image);
                             setUrl(item.url || "");
+                            setDisplayFor(item.displayFor || "desktop");
                             setSelectedId(item._id);
                           }}
                         >

@@ -53,8 +53,8 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-gray-900 text-white pt-10 px-4 md:px-10">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10">
+    <footer className="bg-gray-900 text-white pt-10 px-4 md:px-10 pb-5">
+      <div className="container mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10">
         {/* About */}
         <div>
           <h3 className="text-lg font-semibold mb-4">About NextCart</h3>
@@ -96,7 +96,7 @@ export default function Footer() {
         <div>
           <h3 className="text-lg font-semibold mb-4">Stay Connected</h3>
           <p className="text-sm text-gray-400 mb-3">Subscribe to get updates on special offers and upcoming deals.</p>
-          <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3 mb-3">
+          <form onSubmit={handleSubscribe} className="flex  flex-row gap-3 mb-3">
             <input
               type="email"
               required
