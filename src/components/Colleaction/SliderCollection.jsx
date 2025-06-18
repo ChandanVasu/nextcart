@@ -9,8 +9,6 @@ import "swiper/css/pagination";
 export default function SliderCollection() {
   const [collections, setCollections] = useState([]);
 
-
-
   useEffect(() => {
     async function fetchCollections() {
       try {
@@ -32,6 +30,8 @@ export default function SliderCollection() {
   return (
     <section className="">
       <div className="container mx-auto px-4 md:px-20">
+        <h2 className="text-2xl md:text-3xl font-semibold text-gray-800 mb-2 text-center">Explore Our Collections</h2>
+        <p className="text-gray-600 text-center mb-8">Discover a wide range of collections tailored to your interests</p>
         <Swiper
           modules={[Navigation, Pagination, Autoplay]}
           spaceBetween={20}

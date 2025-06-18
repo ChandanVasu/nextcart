@@ -3,6 +3,8 @@ import ProductGrid from "@/components/Product/ProductGrid";
 import Slider from "@/components/Slider/Slider";
 import SliderCollection from "@/components/Colleaction/SliderCollection";
 import SupportBenefits from "@/components/SupportBenefits";
+import CollectionBanner from "@/components/Colleaction/CollectionBanner";
+import VideoReels from "@/components/VideoReels";
 
 export default function Home() {
   return (
@@ -10,13 +12,19 @@ export default function Home() {
       <div className="mt-1">
         <Slider />
       </div>
-      <div className="mt-8">
+      <div className="md:mt-16 mt-8">
         <SliderCollection />
       </div>
-      <div className="mt-8">
+      <div className="md:mt-16 mt-8">
         <ProductGrid />
       </div>
-      <div className="mt-8">
+      <div className="md:mt-16 mt-8">
+        <CollectionBanner />
+      </div>
+      <div className="md:mt-16 mt-8">
+        <VideoReels />
+      </div>
+      <div className="md:mt-6 mt-4">
         <SupportBenefits />
       </div>
     </div>

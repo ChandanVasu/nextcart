@@ -7,7 +7,9 @@ if (mongoose.models.Products) delete mongoose.models.Products;
 const Product = mongoose.model("Products", ProductSchema);
 
 // ✅ GET: Fetch product by ID
-export async function GET(_, { params }) {
+export async function GET(request, context) {
+  const { params } = context;
+
   try {
     await dbConnect();
     const product = await Product.findById(params.id);
