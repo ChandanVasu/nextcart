@@ -30,7 +30,6 @@ export default function StyleOne() {
 
   return (
     <div className="px-4 md:px-20 container mx-auto">
-      
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6">
         {products.map((product) => (
           <div key={product._id} className="bg-white border border-gray-200 rounded-xl overflow-hidden">
@@ -39,7 +38,7 @@ export default function StyleOne() {
               <ProductLabel label={product.productLabel} />
             </div>
             <div className="p-4">
-              <h2 className="text-sm font-semibold text-gray-800 leading-tight line-clamp-2 mb-2">{product.title}</h2>
+              <h2 className="text-sm font-semibold text-gray-800 leading-tight line-clamp-1 mb-2">{product.title}</h2>
               <div className="flex items-center gap-2 mb-1">
                 {product.salePrice ? (
                   <>

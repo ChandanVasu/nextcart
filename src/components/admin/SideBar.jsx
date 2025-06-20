@@ -19,6 +19,7 @@ import {
   BarChart2,
   Settings,
   LogOut,
+  Video,
 } from "lucide-react";
 
 const SideBar = () => {
@@ -37,6 +38,7 @@ const SideBar = () => {
     { href: "/admin/customers", icon: <Users size={18} />, label: "Customers" },
     { href: "/admin/menu", icon: <Menu size={18} />, label: "New Menu" },
     { href: "/admin/slider", icon: <Layers size={18} />, label: "Slider" },
+    { href: "/admin/reel", icon: <Video size={18} />, label: "Reels" },
     { href: "/admin/news-latter", icon: <Mail size={18} />, label: "News Letter" },
     { href: "/admin/analytics", icon: <BarChart2 size={18} />, label: "Analytics" },
     { href: "/admin/settings", icon: <Settings size={18} />, label: "Settings" },
@@ -48,11 +50,10 @@ const SideBar = () => {
   };
 
   return (
-    <div className="flex flex-col justify-between h-full">
-      <ul className="flex flex-col gap-3">
+    <div className="flex flex-col h-full">
+      <ul className="flex-1 flex flex-col gap-3 overflow-y-auto pr-1 scrollbar-thin">
         {links.map(({ href, icon, label }) => {
           const isActive = pathname === href;
-
           return (
             <Link key={href} href={href}>
               <li
@@ -66,15 +67,15 @@ const SideBar = () => {
             </Link>
           );
         })}
-
-        <button
-          onClick={handleLogout}
-          className="flex gap-3 items-center px-3 py-2 rounded-md text-base transition-colors hover:bg-white/60 cursor-pointer"
-        >
-          <LogOut size={18} />
-          <p className="font-medium text-sm">Logout</p>
-        </button>
       </ul>
+
+      <button
+        onClick={handleLogout}
+        className="flex gap-3 items-center px-3 py-2 rounded-md text-base transition-colors hover:bg-white/60 cursor-pointer"
+      >
+        <LogOut size={18} />
+        <p className="font-medium text-sm">Logout</p>
+      </button>
     </div>
   );
 };

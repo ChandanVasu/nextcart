@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, Suspense } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import dynamic from "next/dynamic";
 import { Input, Select, SelectItem, Textarea } from "@heroui/react";
 import CustomButton from "@/components/block/CustomButton";
@@ -12,7 +12,6 @@ const TextEditor = dynamic(() => import("@/components/block/TextEditor"), { ssr:
 
 function ProductForm() {
   const searchParams = useSearchParams();
-  const router = useRouter();
 
   const productId = searchParams?.get("productId") || "";
   const isUpdate = searchParams?.get("isUpdate") === "true";
@@ -25,6 +24,8 @@ function ProductForm() {
   const [isImageSelectorOpen, setIsImageSelectorOpen] = useState(false);
   const [selectedImages, setSelectedImages] = useState([]);
   const [isFetching, setIsFetching] = useState(false);
+
+  const [variantInput, setVariantInput] = useState({ name: "", options: "" });
 
   const fetchCollection = async () => {
     setIsFetching(true);
@@ -48,7 +49,7 @@ function ProductForm() {
   const [productData, setProductData] = useState({
     title: "",
     description: "",
-    shortDescription: "", // ✅ New field
+    shortDescription: "",
     regularPrice: "",
     salePrice: "",
     sku: "",
@@ -61,6 +62,7 @@ function ProductForm() {
     status: "Active",
     stockStatus: "In Stock",
     costPerItem: "",
+    variants: [], // ✅ New: variants
   });
 
   const visibilityOptions = ["Active", "Inactive"];
@@ -78,7 +80,7 @@ function ProductForm() {
         setProductData({
           title: data.title || "",
           description: data.description || "",
-          shortDescription: data.shortDescription || "", // ✅ Prefill short description
+          shortDescription: data.shortDescription || "",
           regularPrice: data.regularPrice || "",
           salePrice: data.salePrice || "",
           sku: data.sku || "",
@@ -91,6 +93,7 @@ function ProductForm() {
           status: data.status || "Active",
           stockStatus: data.stockStatus || "In Stock",
           costPerItem: data.costPerItem || "",
+          variants: data.variants || [], // ✅ load existing variants
         });
 
         setSelectedImages(data.images || []);
@@ -104,6 +107,30 @@ function ProductForm() {
   }, [isUpdate, productId]);
 
   const handleCategoryChange = (keys) => setCategories(new Set(keys));
+
+  const addVariant = () => {
+    if (!variantInput.name || !variantInput.options) return;
+
+    const newVariant = {
+      name: variantInput.name,
+      options: variantInput.options.split(",").map((opt) => opt.trim()),
+    };
+
+    setProductData((prev) => ({
+      ...prev,
+      variants: [...prev.variants, newVariant],
+    }));
+
+    setVariantInput({ name: "", options: "" });
+  };
+
+  const removeVariant = (index) => {
+    setProductData((prev) => {
+      const updated = [...prev.variants];
+      updated.splice(index, 1);
+      return { ...prev, variants: updated };
+    });
+  };
 
   const addOrUpdateProduct = async () => {
     setAddLoading(true);
@@ -156,6 +183,7 @@ function ProductForm() {
           <Input
             label="Product Name"
             labelPlacement="outside"
+            isDisabled={isFetching}
             size="sm"
             placeholder="Enter product name"
             value={productData.title}
@@ -187,16 +215,15 @@ function ProductForm() {
             />
           </div>
 
-          {/* ✅ Short Description */}
           <Textarea
             label="Short Description"
+            isDisabled={isFetching}
             labelPlacement="outside"
             placeholder="Enter short product summary"
             value={productData.shortDescription}
             onChange={(e) => setProductData({ ...productData, shortDescription: e.target.value })}
           />
 
-          {/* Full Description */}
           <TextEditor value={productData.description} onChange={(value) => setProductData((prev) => ({ ...prev, description: value }))} />
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
@@ -205,6 +232,7 @@ function ProductForm() {
               labelPlacement="outside"
               size="sm"
               type="number"
+              isDisabled={isFetching}
               startContent={<span>{currencySymbol}</span>}
               placeholder="Enter regular price"
               value={productData.regularPrice}
@@ -216,6 +244,7 @@ function ProductForm() {
               label="Sale Price"
               labelPlacement="outside"
               size="sm"
+              isDisabled={isFetching}
               type="number"
               startContent={<span>{currencySymbol}</span>}
               placeholder="Enter sale price"
@@ -226,6 +255,7 @@ function ProductForm() {
               label="SKU"
               labelPlacement="outside"
               size="sm"
+              isDisabled={isFetching}
               placeholder="Enter SKU"
               value={productData.sku}
               onChange={(e) => setProductData({ ...productData, sku: e.target.value })}
@@ -234,6 +264,7 @@ function ProductForm() {
               label="Stock Quantity"
               labelPlacement="outside"
               size="sm"
+              isDisabled={isFetching}
               type="number"
               placeholder="Enter quantity"
               value={productData.stockQuantity}
@@ -243,6 +274,7 @@ function ProductForm() {
               label="Cost per item"
               labelPlacement="outside"
               size="sm"
+              isDisabled={isFetching}
               type="number"
               placeholder="Enter cost per item"
               value={productData.costPerItem}
@@ -252,6 +284,7 @@ function ProductForm() {
               label="Profit"
               labelPlacement="outside"
               size="sm"
+              isDisabled={isFetching}
               placeholder="Auto-calculated profit"
               readOnly
               value={
@@ -261,6 +294,55 @@ function ProductForm() {
               }
             />
           </div>
+
+          {/* ✅ Variant Section */}
+          <div className="space-y-4">
+            <h2 className="text-base font-semibold">Product Variants</h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <Input
+                label="Variant Name"
+                labelPlacement="outside"
+                size="sm"
+                isDisabled={isFetching}
+                placeholder="e.g., Size, Color"
+                value={variantInput.name}
+                onChange={(e) => setVariantInput({ ...variantInput, name: e.target.value })}
+                className="text-sm"
+              />
+              <Input
+                label="Options"
+                labelPlacement="outside"
+                size="sm"
+                isDisabled={isFetching}
+                placeholder="e.g., Small, Medium, Large"
+                value={variantInput.options}
+                onChange={(e) => setVariantInput({ ...variantInput, options: e.target.value })}
+                className="text-sm"
+              />
+            </div>
+
+            <div>
+              <CustomButton onPress={addVariant} size="sm" className="bg-gray-900 text-white hover:bg-gray-700 rounded px-4 py-1.5 text-sm">
+                + Add Variant
+              </CustomButton>
+            </div>
+
+            {productData.variants.length > 0 && (
+              <div className="space-y-2">
+                {productData.variants.map((variant, index) => (
+                  <div key={index} className="flex justify-between items-center border border-gray-100 rounded-md px-3 py-2 text-sm text-gray-700">
+                    <div className="truncate">
+                      <strong className="font-medium">{variant.name}:</strong> {variant.options.join(", ")}
+                    </div>
+                    <button onClick={() => removeVariant(index)} className="text-xs text-red-500 hover:underline">
+                      Remove
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Right Panel */}
@@ -268,6 +350,7 @@ function ProductForm() {
           <Select
             label="Product Status"
             labelPlacement="outside"
+            isDisabled={isFetching}
             placeholder="Select product status"
             size="sm"
             selectedKeys={[productData.status]}
@@ -282,6 +365,7 @@ function ProductForm() {
             label="Stock Status"
             labelPlacement="outside"
             placeholder="Select stock status"
+            isDisabled={isFetching}
             size="sm"
             selectedKeys={[productData.stockStatus]}
             onSelectionChange={(keys) => setProductData({ ...productData, stockStatus: Array.from(keys)[0] })}
@@ -294,6 +378,7 @@ function ProductForm() {
           <Select
             label="Collections"
             labelPlacement="outside"
+            isDisabled={isFetching}
             size="sm"
             selectionMode="multiple"
             placeholder="Select collections"
@@ -309,6 +394,7 @@ function ProductForm() {
             label="Product Label"
             labelPlacement="outside"
             placeholder="Select label"
+            isDisabled={isFetching}
             size="sm"
             selectedKeys={[productData.productLabel]}
             onSelectionChange={(keys) => setProductData({ ...productData, productLabel: Array.from(keys)[0] })}
@@ -321,6 +407,7 @@ function ProductForm() {
           <Input
             label="Tags"
             labelPlacement="outside"
+            isDisabled={isFetching}
             size="sm"
             placeholder="e.g. electronics, smart"
             value={productData.tags}
@@ -331,6 +418,7 @@ function ProductForm() {
             label="Supplier"
             labelPlacement="outside"
             size="sm"
+            isDisabled={isFetching}
             placeholder="Enter supplier name"
             value={productData.supplier}
             onChange={(e) => setProductData({ ...productData, supplier: e.target.value })}
