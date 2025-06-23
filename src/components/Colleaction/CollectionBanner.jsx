@@ -4,17 +4,17 @@ const collections = [
   {
     title: "Women Collections",
     url: "/collections",
-    image: "https://static.vecteezy.com/system/resources/previews/053/267/627/non_2x/happy-new-year-sale-2025-design-with-gold-typography-lettering-and-clock-on-glittered-background-holiday-special-offer-campaign-discount-illustration-for-coupon-voucher-banner-flyer-promotional-vector.jpg",
+    image: "/image/BannerCollection_1.webp",
   },
   {
     title: "Women Collections",
     url: "/collections",
-    image: "https://img.freepik.com/premium-vector/happy-new-year-sale-2025-design-with-typography-gold-christmas-ball-star-black-background_1314-5872.jpg",
+    image: "/image/BannerCollection_2.webp",
   },
   {
     title: "Women Collections",
     url: "/collections",
-    image: "https://cdn.zeebiz.com/sites/default/files/2021/10/31/164466-amazon-dhanteras.jpg",
+    image: "/image/BannerCollection_3.webp",
   },
 ];
 
@@ -24,7 +24,7 @@ export default function CollectionBanner() {
       {collections.map((item, idx) => (
         <div key={idx}>
           <a href={item.url}>
-            <img src={item.image} alt={item.title} className="w-full md:h-[250px] h-[170px] rounded-lg object-fill object-center" />
+            <img src={item.image} alt={item.title} className="w-full md:h-[220px] h-[170px] rounded-lg object-fill object-center" />
           </a>
         </div>
       ))}

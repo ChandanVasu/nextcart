@@ -8,6 +8,7 @@
 
 body {
   font-family: var(--font-family-base), sans-serif;
+  background-color: #f9fafb;
 }
 
 @keyframes marquee-infinite {

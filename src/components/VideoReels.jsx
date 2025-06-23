@@ -6,6 +6,7 @@ import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+import { Skeleton } from "@heroui/skeleton"; // ✅ Import Skeleton
 
 // Helper: Extract YouTube Video ID
 const getYoutubeId = (url) => {
@@ -48,8 +49,28 @@ export default function VideoReelsSlider() {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <p className="text-gray-600 text-lg">Loading reels...</p>
+      <div className="container mx-auto px-4 md:px-20">
+        <h2 className="text-2xl font-bold text-center mb-3">Customer Reels</h2>
+        <p className="text-center text-base mb-12">Real feedback from our happy customers</p>
+
+        <Swiper
+          spaceBetween={20}
+          slidesPerView={1.1}
+          breakpoints={{
+            640: { slidesPerView: 1.5 },
+            768: { slidesPerView: 2.5 },
+            1024: { slidesPerView: 5 },
+          }}
+          className="pb-8 hide-swiper-dots"
+        >
+          {Array.from({ length: 5 }).map((_, idx) => (
+            <SwiperSlide key={idx}>
+              <div className="rounded-xl overflow-hidden aspect-[9/16]">
+                <Skeleton className="w-full h-full rounded-xl" />
+              </div>
+            </SwiperSlide>
+          ))}
+        </Swiper>
       </div>
     );
   }
@@ -63,9 +84,9 @@ export default function VideoReelsSlider() {
   }
 
   return (
-    <div className="container mx-auto  px-4 md:px-20">
+    <div className="container mx-auto px-4 md:px-20">
       <h2 className="text-2xl font-bold text-center mb-3">Customer Reels</h2>
-      <p className="text-center  text-base mb-12">Real feedback from our happy customers</p>
+      <p className="text-center text-base mb-12">Real feedback from our happy customers</p>
 
       <Swiper
         spaceBetween={20}
