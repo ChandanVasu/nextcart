@@ -53,8 +53,8 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-gray-900 text-white pt-10 px-4 md:px-10 pb-5">
-      <div className="container mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10">
+    <footer className="bg-gray-900 text-white pt-10 px-4 sm:px-6 md:px-10 pb-6">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10">
         {/* About */}
         <div>
           <h3 className="text-lg font-semibold mb-4">About NextCart</h3>
@@ -96,22 +96,22 @@ export default function Footer() {
         <div>
           <h3 className="text-lg font-semibold mb-4">Stay Connected</h3>
           <p className="text-sm text-gray-400 mb-3">Subscribe to get updates on special offers and upcoming deals.</p>
-          <form onSubmit={handleSubscribe} className="flex  flex-row gap-3 mb-3">
+          <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3 mb-3">
             <input
               type="email"
               required
               placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="flex-1 px-3 py-2 rounded bg-gray-800 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              className="w-full sm:flex-1 px-3 py-2 rounded bg-gray-800 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-400"
             />
             <button type="submit" className="bg-yellow-500 text-black px-4 py-2 rounded hover:bg-yellow-400 transition">
               Subscribe
             </button>
           </form>
-          {status && <p className="text-sm text-gray-300">{status}</p>}
+          {status && <p className="text-sm text-green-400">{status}</p>}
 
-          <div className="flex space-x-4 text-gray-400 mt-4">
+          <div className="flex justify-center sm:justify-start space-x-4 text-gray-400 mt-4 text-xl">
             {socialLinks.map((item, index) => (
               <a key={index} href={item.href} className="hover:text-white transition" target="_blank" rel="noopener noreferrer">
                 {item.icon}
