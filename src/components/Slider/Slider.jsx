@@ -18,7 +18,7 @@ export default function StyleOne() {
 
   useEffect(() => {
     const checkScreen = () => setIsMobile(window.innerWidth < 768);
-    checkScreen(); // initial check
+    checkScreen();
     window.addEventListener("resize", checkScreen);
     return () => window.removeEventListener("resize", checkScreen);
   }, []);
@@ -32,11 +32,13 @@ export default function StyleOne() {
         if (res.ok) {
           const sorted = data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
           setImages(sorted);
-          setIsLoading(false);
+        } else {
+          setError("Failed to load images");
         }
       } catch (error) {
         console.error("Error fetching slider images:", error);
         setError("Failed to load images");
+      } finally {
         setIsLoading(false);
       }
     };
@@ -46,16 +48,17 @@ export default function StyleOne() {
 
   if (isLoading) {
     return (
-      <div className={`w-full ${isMobile ? "h-[600px]" : "h-[600px]"}`}>
+      <div className={`w-full ${isMobile ? "h-[400px]" : "h-[600px]"}`}>
         <Skeleton className="w-full h-full" />
       </div>
     );
   }
 
-  // Filter images based on screen
-  const filteredImages = images.filter((img) => (isMobile ? img.displayFor === "mobile" : img.displayFor === "desktop"));
+  const filteredImages = images.filter((img) =>
+    isMobile ? img.displayFor === "mobile" : img.displayFor === "desktop"
+  );
 
-  if (filteredImages.length === 0) return null;
+  const showFallback = filteredImages.length === 0;
 
   return (
     <div className="w-full">
@@ -68,15 +71,29 @@ export default function StyleOne() {
           disableOnInteraction: false,
         }}
         pagination={{ clickable: true }}
-        className={isMobile ? "h-[600px]" : "h-[600px]"}
+        className={isMobile ? "h-[400px]" : "h-[600px]"}
       >
-        {filteredImages.map((item, index) => (
-          <SwiperSlide key={item._id || index}>
-            <a href={item.url || "#"}>
-              <img src={item.image} alt={item.title || `Slide ${index + 1}`} className="w-full h-full object-cover" />
-            </a>
+        {showFallback ? (
+          <SwiperSlide>
+            <img
+              src={`https://placehold.co/1200x${isMobile ? 400 : 600}?text=No+Images+Available`}
+              alt="Placeholder"
+              className="w-full h-full object-cover"
+            />
           </SwiperSlide>
-        ))}
+        ) : (
+          filteredImages.map((item, index) => (
+            <SwiperSlide key={item._id || index}>
+              <a href={item.url || "#"}>
+                <img
+                  src={item.image}
+                  alt={item.title || `Slide ${index + 1}`}
+                  className="w-full h-full object-cover"
+                />
+              </a>
+            </SwiperSlide>
+          ))
+        )}
       </Swiper>
     </div>
   );

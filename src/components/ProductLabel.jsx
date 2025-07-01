@@ -1,13 +1,5 @@
 import React from "react";
-import {
-  Flame,
-  Star,
-  Tag,
-  Gift,
-  BadgeDollarSign,
-  Sparkles,
-  TrendingUp,
-} from "lucide-react";
+import { Flame, Star, Tag, Gift, BadgeDollarSign, Sparkles, TrendingUp } from "lucide-react";
 
 const labelStyles = {
   Trending: {
@@ -47,10 +39,17 @@ export default function ProductLabel({ label }) {
 
   return (
     <span
-      className={`absolute top-2 left-2 px-2 py-0.5 text-xs font-semibold rounded flex items-center ${bgClass}`}
+      className={`
+    absolute top-1.5 left-1.5 
+    px-1.5 py-0.5 
+    text-[10px] sm:text-xs 
+    font-semibold rounded 
+    flex items-center gap-1 
+    ${bgClass}
+  `}
     >
       {icon}
-      {label}
+      <span className="truncate">{label}</span>
     </span>
   );
 }

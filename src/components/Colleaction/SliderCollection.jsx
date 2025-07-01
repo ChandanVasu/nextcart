@@ -8,6 +8,17 @@ import "swiper/css/pagination";
 import Link from "next/link";
 import { Skeleton } from "@heroui/skeleton";
 
+const SAMPLE_COLLECTIONS = [
+  { id: "sample-1", title: "Sample 1", image: "https://placehold.co/100x100" },
+  { id: "sample-2", title: "Sample 2", image: "https://placehold.co/100x100" },
+  { id: "sample-3", title: "Sample 3", image: "https://placehold.co/100x100" },
+  { id: "sample-4", title: "Sample 4", image: "https://placehold.co/100x100" },
+  { id: "sample-5", title: "Sample 5", image: "https://placehold.co/100x100" },
+  { id: "sample-6", title: "Sample 6", image: "https://placehold.co/100x100" },
+  { id: "sample-7", title: "Sample 7", image: "https://placehold.co/100x100" },
+  { id: "sample-8", title: "Sample 8", image: "https://placehold.co/100x100" },
+];
+
 export default function SliderCollection({ isTitle = true }) {
   const [collections, setCollections] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -17,9 +28,14 @@ export default function SliderCollection({ isTitle = true }) {
       try {
         const res = await fetch("/api/collection");
         const data = await res.json();
-        setCollections(data);
+        if (Array.isArray(data) && data.length > 0) {
+          setCollections(data);
+        } else {
+          setCollections(SAMPLE_COLLECTIONS); // use fallback
+        }
       } catch (error) {
         console.error("Failed to load collections:", error);
+        setCollections(SAMPLE_COLLECTIONS); // fallback on error
       } finally {
         setLoading(false);
       }
@@ -29,7 +45,7 @@ export default function SliderCollection({ isTitle = true }) {
   }, []);
 
   return (
-    <section className="">
+    <section>
       <div className="container mx-auto px-4 md:px-20">
         {isTitle && (
           <div>
@@ -47,12 +63,11 @@ export default function SliderCollection({ isTitle = true }) {
               </div>
             ))}
           </div>
-        ) : collections.length ? (
+        ) : (
           <Swiper
             modules={[Navigation, Pagination, Autoplay]}
             spaceBetween={20}
-            slidesPerView={1}
-            loop={true}
+            loop
             pagination={{ clickable: true }}
             autoplay={{ delay: 2000, disableOnInteraction: false }}
             className="collection-swiper hide-swiper-dots"
@@ -68,7 +83,11 @@ export default function SliderCollection({ isTitle = true }) {
                 <Link href={`/`}>
                   <div className="flex flex-col items-center text-center">
                     <div className="md:w-28 md:h-28 w-24 h-24 rounded-full border border-blue-300 p-1 flex items-center justify-center shadow-sm transition-all duration-300 hover:shadow-md">
-                      <img src={collection.image || ""} alt={collection.title} className="w-full h-full rounded-full object-cover object-center" />
+                      <img
+                        src={collection.image || "https://placehold.co/100x100"}
+                        alt={collection.title}
+                        className="w-full h-full rounded-full object-cover object-center"
+                      />
                     </div>
                     <p className="mt-2 text-sm font-medium text-gray-800 line-clamp-1">{collection.title}</p>
                   </div>
@@ -76,8 +95,6 @@ export default function SliderCollection({ isTitle = true }) {
               </SwiperSlide>
             ))}
           </Swiper>
-        ) : (
-          <div className="text-center text-gray-500 py-10">No collections available.</div>
         )}
       </div>
     </section>
