@@ -50,8 +50,8 @@ export default function VideoReelsSlider() {
   if (isLoading) {
     return (
       <div className="container mx-auto px-4 md:px-20">
-        <h2 className="text-2xl font-bold text-center mb-3">Customer Reels</h2>
-        <p className="text-center text-base mb-12">Real feedback from our happy customers</p>
+        <h2 className="text-lg md:text-2xl font-bold text-center mb-2">Customer Reels</h2>
+        <p className="text-center text-xs md:text-sm mb-5 md:mb-12">Real feedback from our happy customers</p>
 
         <Swiper
           spaceBetween={20}

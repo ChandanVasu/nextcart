@@ -1,34 +1,40 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ProductGallery from "@/components/ProductGallery";
 import SliderProduct from "@/components/Product/SliderProduct";
 import SliderCollection from "@/components/Colleaction/SliderCollection";
 import VideoReels from "@/components/VideoReels";
 import SupportBenefits from "@/components/SupportBenefits";
-import { ShoppingCart, Zap, ShieldCheck, Truck, Repeat, BadgeCheck } from "lucide-react";
+import { ShoppingCart, Zap, ShieldCheck, Truck, Repeat, BadgeCheck, Eye } from "lucide-react";
 import { Button } from "@heroui/react";
 
 export default function Product({ data }) {
   const [quantity, setQuantity] = useState(1);
   const [addCartLoading, setAddCartLoading] = useState(false);
 
+  const [viewerCount, setViewerCount] = useState(null);
+
+  useEffect(() => {
+    setViewerCount(Math.floor(Math.random() * 1000) + 30);
+  }, []);
+
   const handleAddToCart = () => {
     setAddCartLoading(true);
 
     setTimeout(() => {
       const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-      const existingIndex = cart.findIndex((item) => item.productId === data.product_id);
+      const existingIndex = cart.findIndex((item) => item.productId === data._id);
 
       if (existingIndex !== -1) {
         cart[existingIndex].quantity += quantity;
       } else {
         cart.push({
-          productId: data.product_id,
+          productId: data._id, // ✅ fixed
           title: data.title,
           quantity: quantity,
-          color: null, // placeholder for future
-          size: null, // placeholder for future
+          color: null,
+          size: null,
           image: data.images[0]?.url,
           price: data.salePrice || data.regularPrice,
           currency: data.currencySymbol || "₹",
@@ -42,7 +48,7 @@ export default function Product({ data }) {
 
   const handleBuyNow = () => {
     const buyNowData = {
-      productId: data.product_id,
+      productId: data._id,
       title: data.title,
       quantity: quantity,
       color: null,
@@ -63,16 +69,35 @@ export default function Product({ data }) {
 
         <div className="flex flex-col justify-start gap-4">
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">{data.title}</h1>
+            <h1 className="text-xl md:text-3xl font-bold text-gray-900 mb-4">{data.title}</h1>
             <div className="flex items-center gap-4 mb-5">
-              <span className="text-2xl font-bold text-red-600">₹{data.salePrice}</span>
-              <span className="text-lg text-gray-400 line-through">₹{data.regularPrice}</span>
-              <span className="text-sm text-green-600 bg-green-100 px-2 py-1 rounded">
-                {Math.round(((+data.regularPrice - +data.salePrice) / +data.regularPrice) * 100)}% OFF
+              <span className="text-2xl font-bold text-blue-600">
+                {data.currencySymbol}
+                {data.salePrice ? data.salePrice : data.regularPrice}
               </span>
+
+              {data.salePrice && (
+                <>
+                  <span className="text-lg text-gray-400 line-through">
+                    {data.currencySymbol}
+                    {data.regularPrice}
+                  </span>
+                  <span className="text-sm text-green-600 bg-green-100 px-2 py-1 rounded">
+                    {Math.round(((+data.regularPrice - +data.salePrice) / +data.regularPrice) * 100)}% OFF
+                  </span>
+                </>
+              )}
             </div>
+
             <p className="text-sm text-gray-600 ">{data.shortDescription}</p>
           </div>
+
+          {viewerCount !== null && (
+            <div className="flex items-center gap-1 mt-4 ">
+              <Eye className="w-5 h-5 text-blue-400 " />
+              <p className="line-clamp-1 flex-1">{viewerCount} people are viewing this product right now</p>
+            </div>
+          )}
 
           {/* Add to Cart / Buy Now */}
           <div className="flex flex-col w-full sm:flex-row gap-4 mt-4">
@@ -88,7 +113,7 @@ export default function Product({ data }) {
             <Button
               onPress={handleBuyNow}
               size="md"
-              className="w-full flex items-center justify-center gap-2 bg-red-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-red-700 transition"
+              className="w-full flex items-center justify-center gap-2 bg-blue-800 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-600 transition"
             >
               <Zap className="w-5 h-5" />
               Buy Now
@@ -118,7 +143,7 @@ export default function Product({ data }) {
       </section>
 
       {data.description && (
-        <div className="container mx-auto px-4 md:px-20 pt-5">
+        <div className="container mx-auto px-4 md:px-20 pt-3 md:pt-5">
           <div className="text-black md:text-base text-sm leading-relaxed mb-6" dangerouslySetInnerHTML={{ __html: data.description }} />
         </div>
       )}

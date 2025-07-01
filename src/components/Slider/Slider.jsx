@@ -40,7 +40,7 @@ export default function StyleOne() {
 
   if (isLoading) {
     return (
-      <div className="w-full h-[150px] md:h-[500px] p-4 ">
+      <div className="w-full h-[170px] md:h-[530px] p-4 ">
         <Skeleton className="w-full h-full rounded-lg" />
       </div>
     );

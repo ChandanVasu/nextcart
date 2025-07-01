@@ -54,10 +54,10 @@ function AllProductsPage() {
   }, [selectedCollection]);
 
   return (
-    <div className="px-4 md:px-20 py-10 container mx-auto min-h-screen">
-      <h1 className="text-2xl font-bold mb-6 text-center">{selectedCollection ? `Collection: ${selectedCollection}` : "All Products"}</h1>
+    <div className=" md:px-20 py-10 container mx-auto min-h-screen">
+      <h1 className="md:text-2xl text-lg font-bold mb-6 text-center">{selectedCollection ? `Collection: ${selectedCollection}` : "All Products"}</h1>
 
-      <div className="md:mt-10 mt-8 mb-10">
+      <div className="md:mt-10 mt-8 mb-10 ">
         <SliderCollection isTitle={false} />
       </div>
 
@@ -74,7 +74,7 @@ function AllProductsPage() {
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 md:gap-6 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 md:gap-6 gap-3 px-4">
           {products.map((product) => (
             <Link href={`/product/${product._id}`} key={product._id}>
               <div className="bg-gray-100 border border-gray-50 rounded-xl overflow-hidden">

@@ -70,7 +70,9 @@ export default function FullHeader() {
 
           <div className="flex gap-1 items-center justify-end">
             <button className="text-black text-xl p-2 cursor-pointer">
-              <IoBagHandle />
+              <Link href="/cart" className="text-black text-xl p-2 cursor-pointer">
+                <IoBagHandle />
+              </Link>
             </button>
             <button onClick={() => setMenuOpen(true)} className="text-black text-xl p-2 cursor-pointer">
               <RiMenu3Line />

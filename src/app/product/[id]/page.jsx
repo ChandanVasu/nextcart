@@ -1,15 +1,14 @@
-import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import Product from "./product";
+import getDomainName from "@/lib/getServerDomainName";
 
-export default async function Page({ params }) {
-  const { id } = params;
+export default async function Page(props) {
+  const { params } = props;
+  const { id } = await params;
 
-  const headersList = headers();
-  const host = headersList.get("host");
-  const protocol = host?.includes("localhost") ? "http" : "https";
+  const domainName = await getDomainName();
 
-  const res = await fetch(`${protocol}://${host}/api/product/${id}`, {
+  const res = await fetch(`${domainName}/api/product/${id}`, {
     cache: "no-store",
   });
 
@@ -19,15 +18,13 @@ export default async function Page({ params }) {
   return <Product data={data} />;
 }
 
-// ✅ Add this to dynamically generate metadata
-export async function generateMetadata({ params }) {
+export async function generateMetadata(props) {
+  const params = await props.params;
   const { id } = params;
 
-  const headersList = headers();
-  const host = headersList.get("host");
-  const protocol = host?.includes("localhost") ? "http" : "https";
+  const domainName = await getDomainName();
 
-  const res = await fetch(`${protocol}://${host}/api/product/${id}`, {
+  const res = await fetch(`${domainName}/api/product/${id}`, {
     cache: "force-cache",
   });
 
@@ -38,8 +35,7 @@ export async function generateMetadata({ params }) {
     };
   }
 
-  const data = await res.json();
-  const product = data;
+  const product = await res.json();
 
   return {
     title: product.title,

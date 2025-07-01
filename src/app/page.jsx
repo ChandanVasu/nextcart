@@ -12,7 +12,7 @@ export default function Home() {
       <div className="mt-1">
         <Slider />
       </div>
-      <div className="md:mt-16 mt-8">
+      <div className="md:mt-16 mt-2">
         <SliderCollection />
       </div>
       <div className="md:mt-16 mt-8">
