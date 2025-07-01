@@ -66,7 +66,7 @@ export default function StyleOne() {
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 md:gap-6 gap-3">
         {products.map((product) => (
           <Link href={`/product/${product._id}`} key={product._id}>
-            <div className="bg-white border border-gray-50 rounded-xl overflow-hidden">
+            <div className="bg-gray-100 border border-gray-50 rounded-xl overflow-hidden">
               <div className="relative">
                 <img
                   src={product.images?.[0] || "https://placehold.co/400x500?text=No+Image"}
@@ -75,7 +75,7 @@ export default function StyleOne() {
                 />
                 <ProductLabel label={product.productLabel} />
               </div>
-              <div className="p-4 text-center">
+              <div className="p-4 text-center bg-white">
                 <h2 className="text-sm font-semibold text-gray-800 leading-tight line-clamp-1 mb-2 md:mb-3">{product.title}</h2>
                 <p className="text-xs line-clamp-2 mb-2 md:mb-3">{product.shortDescription}</p>
                 <div className="flex items-center justify-center gap-2 mb-1">

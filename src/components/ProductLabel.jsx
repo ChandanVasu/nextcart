@@ -40,7 +40,7 @@ export default function ProductLabel({ label }) {
   return (
     <span
       className={`
-    absolute top-1.5 left-1.5 
+    absolute top-2 left-2
     px-1.5 py-0.5 
     text-[10px] sm:text-xs 
     font-semibold rounded 

@@ -20,10 +20,30 @@ function ProductForm() {
   const [isInvalid, setIsInvalid] = useState(false);
   const [categories, setCategories] = useState(new Set());
   const [fetchingCollection, setFetchingCollection] = useState([]);
-  const [currencySymbol] = useState("\u20B9");
   const [isImageSelectorOpen, setIsImageSelectorOpen] = useState(false);
   const [selectedImages, setSelectedImages] = useState([]);
   const [isFetching, setIsFetching] = useState(false);
+
+  const [currencyCode, setCurrencyCode] = useState("USD");
+  const [currencySymbol, setCurrencySymbol] = useState("$");
+
+  useEffect(() => {
+    const fetchCurrency = async () => {
+      try {
+        const res = await fetch("/api/setting");
+        const data = await res.json();
+
+        if (data) {
+          setCurrencyCode(data.currencyCode || "");
+          setCurrencySymbol(data.currencySymbol || "");
+        }
+      } catch (err) {
+        console.error("❌ Failed to fetch currency:", err);
+      }
+    };
+
+    fetchCurrency();
+  }, []);
 
   const [variantInput, setVariantInput] = useState({ name: "", options: "" });
 
@@ -67,7 +87,7 @@ function ProductForm() {
 
   const visibilityOptions = ["Active", "Inactive"];
   const stockStatusOptions = ["In Stock", "Out of Stock"];
-  const productLabelOptions = ["Trending", "New", "Hot", "Best Seller", "Limited Edition", "Sale", "Exclusive"];
+  const productLabelOptions = ["Trending", "New", "Hot", "Best Seller", "Limited Edition", "Sale", "Exclusive", "None"];
 
   useEffect(() => {
     const fetchProductById = async () => {
@@ -149,6 +169,8 @@ function ProductForm() {
         body: JSON.stringify({
           ...(isUpdate && { _id: productId }),
           ...productData,
+          currencyCode,
+          currencySymbol,
           collections: Array.from(categories),
           images: selectedImages,
         }),

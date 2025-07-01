@@ -86,7 +86,7 @@ export default function StyleOne() {
         >
           {products.map((product) => (
             <SwiperSlide key={product._id}>
-              <Link href={"#"}>
+              <Link href={`/product/${product._id}`}>
                 <div className="bg-white border border-gray-50 rounded-xl overflow-hidden">
                   <div className="relative">
                     <img

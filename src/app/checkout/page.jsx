@@ -61,7 +61,7 @@ export default function CheckoutPage() {
     console.log("Billing Details:", errors);
   };
 
-  const availablePaymentMethods = ["Cash on Delivery", "Stripe", "PayPal"];
+  const availablePaymentMethods = ["Cash on Delivery", "Stripe", "PayPal", "Razorpay"];
 
   return (
     <div className="container mx-auto  px-4 md:px-20 my-14">
@@ -178,7 +178,7 @@ export default function CheckoutPage() {
             {mockProducts.map((item) => (
               <div key={item.product_id} className="flex justify-between items-start gap-4">
                 <div className="flex gap-3 items-start">
-                  <img src={item.image} alt={item.title} className="w-10 rounded-lg border border-gray-200" />
+                  <img src={item.image} alt={item.title} className="w-16 rounded-md " />
                   <div>
                     <p className="font-medium text-gray-900">{item.title}</p>
                     <p className="text-xs text-gray-500">Qty: {item.quantity}</p>
@@ -210,17 +210,19 @@ export default function CheckoutPage() {
           <div className="mt-5 space-y-4">
             <h1 className="text-sm font-semibold">Payment Method</h1>
             {availablePaymentMethods.length > 0 ? (
-              availablePaymentMethods.map((method) => (
-                <div
-                  key={method}
-                  onClick={() => setSelectedPaymentMethod(method)}
-                  className={`flex items-center justify-between gap-3 cursor-pointer p-3 rounded-lg border transition ${
-                    selectedPaymentMethod === method ? "border-blue-400" : "border-gray-200"
-                  }`}
-                >
-                  <p className="text-base font-bold">{method}</p>
-                </div>
-              ))
+              <div className="grid md:grid-cols-2 gap-3">
+                {availablePaymentMethods.map((method) => (
+                  <div
+                    key={method}
+                    onClick={() => setSelectedPaymentMethod(method)}
+                    className={`flex items-center justify-between gap-3 cursor-pointer p-3 rounded-lg border transition ${
+                      selectedPaymentMethod === method ? "border-blue-400" : "border-gray-200"
+                    }`}
+                  >
+                    <p className="text-base font-bold">{method}</p>
+                  </div>
+                ))}
+              </div>
             ) : (
               <Alert title="No active payment gateway available." />
             )}

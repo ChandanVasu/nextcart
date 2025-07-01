@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { RiMenu3Line } from "react-icons/ri";
 import { DynamicIcon } from "lucide-react/dynamic";
 import { IoBagHandle } from "react-icons/io5";
+import Link from "next/link";
 
 export default function FullHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -55,8 +56,9 @@ export default function FullHeader() {
     <>
       <header className="w-full text-sm bg-white shadow sticky top-0 z-40">
         <div className="container mx-auto flex items-center justify-between h-12 px-4 md:px-20">
-          <div className="text-xl font-bold tracking-wide text-black">NEXTCART</div>
-
+          <Link href={"/"}>
+            <img src="/logonc.svg" alt="logo" />
+          </Link>
           {/* Desktop Menu */}
           <nav className="hidden md:flex gap-4 items-center">
             {menuItems?.desktop?.map(({ _id, title, url }) => (
