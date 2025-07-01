@@ -71,7 +71,7 @@ export default function Product({ data }) {
                 {Math.round(((+data.regularPrice - +data.salePrice) / +data.regularPrice) * 100)}% OFF
               </span>
             </div>
-            <p className="text-sm text-gray-600 mb-4">{data.shortDescription}</p>
+            <p className="text-sm text-gray-600 ">{data.shortDescription}</p>
           </div>
 
           {/* Add to Cart / Buy Now */}
@@ -118,8 +118,8 @@ export default function Product({ data }) {
       </section>
 
       {data.description && (
-        <div className="container mx-auto px-4 md:px-20 py-10">
-          <div className="text-black text-base leading-relaxed mb-6" dangerouslySetInnerHTML={{ __html: data.description }} />
+        <div className="container mx-auto px-4 md:px-20 pt-5">
+          <div className="text-black md:text-base text-sm leading-relaxed mb-6" dangerouslySetInnerHTML={{ __html: data.description }} />
         </div>
       )}
 

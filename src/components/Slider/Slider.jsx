@@ -12,16 +12,8 @@ const COLLECTION = "slider-image";
 
 export default function StyleOne() {
   const [images, setImages] = useState([]);
-  const [isMobile, setIsMobile] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const checkScreen = () => setIsMobile(window.innerWidth < 768);
-    checkScreen();
-    window.addEventListener("resize", checkScreen);
-    return () => window.removeEventListener("resize", checkScreen);
-  }, []);
 
   useEffect(() => {
     const fetchSliderImages = async () => {
@@ -48,15 +40,14 @@ export default function StyleOne() {
 
   if (isLoading) {
     return (
-      <div className={`w-full ${isMobile ? "h-[400px]" : "h-[600px]"}`}>
-        <Skeleton className="w-full h-full" />
+      <div className="w-full h-[150px] md:h-[500px] p-4 ">
+        <Skeleton className="w-full h-full rounded-lg" />
       </div>
     );
   }
 
-  const filteredImages = images.filter((img) =>
-    isMobile ? img.displayFor === "mobile" : img.displayFor === "desktop"
-  );
+  // Only show images for desktop (or remove this filter if you want to show all)
+  const filteredImages = images.filter((img) => img.displayFor === "desktop");
 
   const showFallback = filteredImages.length === 0;
 
@@ -65,31 +56,23 @@ export default function StyleOne() {
       <Swiper
         modules={[Autoplay, Pagination, Navigation]}
         slidesPerView={1}
+        className="hide-swiper-dots px-6"
         loop={true}
         autoplay={{
           delay: 3000,
           disableOnInteraction: false,
         }}
         pagination={{ clickable: true }}
-        className={isMobile ? "h-[400px]" : "h-[600px]"}
       >
         {showFallback ? (
           <SwiperSlide>
-            <img
-              src={`https://placehold.co/1200x${isMobile ? 400 : 600}?text=No+Images+Available`}
-              alt="Placeholder"
-              className="w-full h-full object-cover"
-            />
+            <img src="https://placehold.co/1200x600?text=No+Images+Available" alt="Placeholder" className="w-full h-full object-cover" />
           </SwiperSlide>
         ) : (
           filteredImages.map((item, index) => (
-            <SwiperSlide key={item._id || index}>
+            <SwiperSlide key={item._id || index} className="p-4">
               <a href={item.url || "#"}>
-                <img
-                  src={item.image}
-                  alt={item.title || `Slide ${index + 1}`}
-                  className="w-full h-full object-cover"
-                />
+                <img src={item.image} alt={item.title || `Slide ${index + 1}`} className="w-full h-[150px] md:h-[500px] object-cover rounded-lg" />
               </a>
             </SwiperSlide>
           ))

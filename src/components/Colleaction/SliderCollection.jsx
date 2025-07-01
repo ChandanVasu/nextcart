@@ -80,7 +80,7 @@ export default function SliderCollection({ isTitle = true }) {
           >
             {collections.map((collection) => (
               <SwiperSlide key={collection.id}>
-                <Link href={`/`}>
+                <Link href={`/product?collection=${collection.title}`}>
                   <div className="flex flex-col items-center text-center">
                     <div className="md:w-28 md:h-28 w-24 h-24 rounded-full border border-blue-300 p-1 flex items-center justify-center shadow-sm transition-all duration-300 hover:shadow-md">
                       <img
