@@ -16,35 +16,119 @@ export default function CheckoutBillingDetails({ billingDetails, setBillingDetai
     }));
   };
 
-  const fields = [
-    ["customer.fullName", "Full name"],
-    ["customer.email", "Email address"],
-    ["customer.company", "Company name"],
-    ["address.country", "Country"],
-    ["address.address1", "Street address"],
-    ["address.address2", "Address line 2"],
-    ["address.city", "City"],
-    ["address.state", "State"],
-    ["address.zip", "ZIP Code"],
-    ["customer.phone", "Phone"],
-  ];
-
   return (
     <div className="w-full md:w-3/5">
       <h2 className="text-xl font-semibold mb-4">Billing Details</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {fields.map(([name, label]) => (
-          <Input
-            key={name}
-            label={label}
-            name={name}
-            value={name.split(".").reduce((o, k) => o[k], billingDetails)}
-            onChange={handleInputChange}
-            placeholder={`Enter your ${label.toLowerCase()}`}
-            labelPlacement="outside"
-            size="md"
-          />
-        ))}
+        <Input
+          label="Full name"
+          name="customer.fullName"
+          value={billingDetails.customer.fullName}
+          onChange={handleInputChange}
+          placeholder="Enter your full name"
+          labelPlacement="outside"
+          size="md"
+          isInvalid={errors.fullNameError}
+          errorMessage={errors.fullNameError ? "Full name is required" : ""}
+        />
+
+        <Input
+          label="Email address"
+          name="customer.email"
+          value={billingDetails.customer.email}
+          onChange={handleInputChange}
+          placeholder="Enter your email address"
+          labelPlacement="outside"
+          size="md"
+          isInvalid={errors.emailError}
+          errorMessage={errors.emailError ? "Email address is required" : ""}
+        />
+
+        <Input
+          label="Company name"
+          name="customer.company"
+          value={billingDetails.customer.company}
+          onChange={handleInputChange}
+          placeholder="Enter your company name"
+          labelPlacement="outside"
+          size="md"
+        />
+
+        <Input
+          label="Phone"
+          name="customer.phone"
+          value={billingDetails.customer.phone}
+          onChange={handleInputChange}
+          placeholder="Enter your phone number"
+          labelPlacement="outside"
+          size="md"
+        />
+
+        <Input
+          label="Country"
+          name="address.country"
+          value={billingDetails.address.country}
+          onChange={handleInputChange}
+          placeholder="Enter your country"
+          labelPlacement="outside"
+          size="md"
+          isInvalid={errors.countryError}
+          errorMessage={errors.countryError ? "Country is required" : ""}
+        />
+
+        <Input
+          label="Street address"
+          name="address.address1"
+          value={billingDetails.address.address1}
+          onChange={handleInputChange}
+          placeholder="Enter your street address"
+          labelPlacement="outside"
+          size="md"
+          isInvalid={errors.address1Error}
+          errorMessage={errors.address1Error ? "Address is required" : ""}
+        />
+
+        <Input
+          label="Address line 2"
+          name="address.address2"
+          value={billingDetails.address.address2}
+          onChange={handleInputChange}
+          placeholder="Enter address line 2 (optional)"
+          labelPlacement="outside"
+          size="md"
+        />
+
+        <Input
+          label="City"
+          name="address.city"
+          value={billingDetails.address.city}
+          onChange={handleInputChange}
+          placeholder="Enter your city"
+          labelPlacement="outside"
+          size="md"
+        />
+
+        <Input
+          label="State"
+          name="address.state"
+          value={billingDetails.address.state}
+          onChange={handleInputChange}
+          placeholder="Enter your state"
+          labelPlacement="outside"
+          size="md"
+        />
+
+        <Input
+          label="ZIP Code"
+          name="address.zip"
+          value={billingDetails.address.zip}
+          onChange={handleInputChange}
+          placeholder="Enter your ZIP code"
+          labelPlacement="outside"
+          size="md"
+          isInvalid={errors.zipError}
+          errorMessage={errors.zipError ? "ZIP code is required" : ""}
+        />
       </div>
     </div>
   );

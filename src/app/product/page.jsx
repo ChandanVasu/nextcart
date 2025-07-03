@@ -62,7 +62,7 @@ function AllProductsPage() {
       </div>
 
       {loading ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 md:gap-6 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 md:gap-6 gap-3 px-4">
           {Array.from({ length: 10 }).map((_, idx) => (
             <div key={idx} className="bg-white rounded-xl overflow-hidden">
               <Skeleton className="w-full aspect-[4/5] rounded-none" />

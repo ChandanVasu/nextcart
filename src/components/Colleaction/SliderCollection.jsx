@@ -70,7 +70,7 @@ export default function SliderCollection({ isTitle = true }) {
             }}
           >
             {loading
-              ? Array.from({ length: 6 }).map((_, idx) => (
+              ? Array.from({ length: 8 }).map((_, idx) => (
                   <SwiperSlide key={`skeleton-${idx}`}>
                     <div className="flex flex-col items-center text-center">
                       <Skeleton className="md:w-28 md:h-28 w-24 h-24 rounded-full" />
