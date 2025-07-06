@@ -32,10 +32,10 @@ const SideBar = () => {
     { href: "/admin/product/new", icon: <Plus size={18} />, label: "New Product" },
     { href: "/admin/collection", icon: <LayoutGrid size={18} />, label: "Collections" },
     { href: "/admin/payment", icon: <CreditCard size={18} />, label: "Payments" },
-    { href: "/admin/post", icon: <FileText size={18} />, label: "Posts" },
-    { href: "/admin/post/new", icon: <Plus size={18} />, label: "New Post" },
+    // { href: "/admin/post", icon: <FileText size={18} />, label: "Posts" },
+    // { href: "/admin/post/new", icon: <Plus size={18} />, label: "New Post" },
     { href: "/admin/orders", icon: <ShoppingCart size={18} />, label: "Orders" },
-    { href: "/admin/customers", icon: <Users size={18} />, label: "Customers" },
+    // { href: "/admin/customers", icon: <Users size={18} />, label: "Customers" },
     { href: "/admin/menu", icon: <Menu size={18} />, label: "New Menu" },
     { href: "/admin/slider", icon: <Layers size={18} />, label: "Slider" },
     { href: "/admin/reel", icon: <Video size={18} />, label: "Reels" },
@@ -51,7 +51,7 @@ const SideBar = () => {
 
   return (
     <div className="flex flex-col h-full">
-      <ul className="flex-1 flex flex-col gap-3 overflow-y-auto pr-1 scrollbar-thin">
+      <ul className="flex-1 flex flex-col gap-3 overflow-y-auto pr-1 scrollbar-thin hide-scrollbar">
         {links.map(({ href, icon, label }) => {
           const isActive = pathname === href;
           return (

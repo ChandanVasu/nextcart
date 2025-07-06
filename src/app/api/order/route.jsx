@@ -24,13 +24,23 @@ export async function GET() {
   return Response.json(orders);
 }
 
-// ✅ POST new order
+// ✅ POST new order (with sessionId check)
 export async function POST(req) {
   try {
     await dbConnect();
     const body = await req.json();
-    const order = await Order.create(body);
-    return Response.json(order, { status: 201 });
+    const { sessionId } = body;
+
+    if (sessionId) {
+      const existingOrder = await Order.findOne({ sessionId });
+      if (existingOrder) {
+        return Response.json({ message: "Order already exists", order: existingOrder }, { status: 200 });
+      }
+    }
+
+    // ✅ Create new order (even if sessionId is null)
+    const newOrder = await Order.create(body);
+    return Response.json(newOrder, { status: 201 });
   } catch (error) {
     console.error("Order POST Error:", error);
     return Response.json({ error: "Failed to create order" }, { status: 500 });

@@ -8,6 +8,8 @@ export default function CheckoutOrderSummary({ billingDetails, setErrors }) {
   const { items: products, loading, paymentMethods } = ProductData();
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
 
+  const [orderCreatedLoading, setOrderCreatedLoading] = useState(false);
+
   const doPayment = initPayment();
 
   const activeMethods = Object.entries(paymentMethods || {}).filter(([, method]) => method.active);
@@ -58,6 +60,7 @@ export default function CheckoutOrderSummary({ billingDetails, setErrors }) {
 
     doPayment({
       products,
+      setOrderCreatedLoading,
       paymentDetails: {
         paymentMethod: selectedPaymentMethod,
         costDetails,
@@ -150,6 +153,7 @@ export default function CheckoutOrderSummary({ billingDetails, setErrors }) {
 
         <Button
           isDisabled={!selectedPaymentMethod || loading}
+          isLoading={orderCreatedLoading}
           onPress={doPaymentButtom}
           className="w-full bg-black text-white py-3 rounded-xl mt-5 hover:bg-indigo-700 transition duration-200 font-medium text-sm shadow"
         >

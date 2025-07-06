@@ -1,4 +1,4 @@
-import SuccessPayment from "./SuccessPayment";
+import orderCreate from "./orderCreate";
 
 export default async function handlePayment({ products, paymentDetails, billingDetails }) {
   try {
@@ -22,19 +22,21 @@ export default async function handlePayment({ products, paymentDetails, billingD
       amount: resData.amount,
       currency: resData.currency,
       order_id: resData.orderId,
-      handler: function (response) {
-        SuccessPayment({
-          paymentData: {
-            transaction_id: response.razorpay_payment_id,
-            payment_order_id: response.razorpay_order_id,
-            payment_methods: "razorpay",
-            status: "paid",
-            costDetails: paymentDetails?.costDetails,
-            products: products,
-          },
+      handler: function () {
+        const createOrder = orderCreate();
+        createOrder({
+          products,
+          paymentDetails,
           billingDetails,
-          checkoutData,
-        });
+          status: "PAID",
+        })
+          .then((orderId) => {
+            if (!orderId) throw new Error("Order creation failed");
+            window.location.href = `/checkout/success?orderId=${orderId}&source=rzp`;
+          })
+          .catch((error) => {
+            console.error("Order creation error:", error);
+          });
       },
       prefill: {
         name: billingDetails?.customer?.fullName,

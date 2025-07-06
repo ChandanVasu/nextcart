@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import getDomainName from "@/lib/getServerDomainName";
 
 const PAYPAL_API = process.env.PAYPAL_MODE === "live" ? "https://api-m.paypal.com" : "https://api-m.sandbox.paypal.com";
 
@@ -21,8 +22,10 @@ async function getAccessToken() {
 
 // Create Order API
 export async function POST(request) {
+  const domainName = await getDomainName();
+
   try {
-    const { amount, currency, customer } = await request.json();
+    const { amount, currency, customer, metadata } = await request.json();
 
     if (!amount || !currency || !customer?.email) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -44,21 +47,22 @@ export async function POST(request) {
               currency_code: currency,
               value: amount.toFixed(2),
             },
+            custom_id: metadata?.orderId || undefined,
+            invoice_id: metadata?.invoiceId || undefined,
           },
         ],
         application_context: {
           brand_name: "Your Store",
           landing_page: "LOGIN",
           user_action: "PAY_NOW",
-          return_url: `${process.env.NEXT_PUBLIC_BASE_URL}/success`,
-          cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/cancel`,
+          return_url: `${domainName}/checkout/success?source=paypal`,
+          cancel_url: `${domainName}/checkout/cancel`,
         },
       }),
     });
 
     const data = await response.json();
 
-    // ✅ Add guard: ensure links are present
     if (!Array.isArray(data.links)) {
       return NextResponse.json(
         {

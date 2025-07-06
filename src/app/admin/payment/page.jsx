@@ -26,11 +26,11 @@ const paymentGateways = [
   //   name: "Flutterwave",
   //   logo: "/Flutterwave.webp",
   // },
-  {
-    id: "cod",
-    name: "Cash on Delivery",
-    logo: "/COD.png",
-  },
+  // {
+  //   id: "cod",
+  //   name: "Cash on Delivery",
+  //   logo: "/COD.png",
+  // },
 ];
 
 const Payment = () => {
