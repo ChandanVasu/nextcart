@@ -2,9 +2,7 @@
 import { useEffect, useState } from "react";
 
 export default function useBuyNowProducts() {
-  // const [items, setItems] = useState([]);
   const [fetchedProducts, setFetchedProducts] = useState([]);
-  const [paymentMethods, setPaymentMethods] = useState({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -12,10 +10,8 @@ export default function useBuyNowProducts() {
 
     async function fetchData() {
       try {
-        const [productRes, paymentRes] = await Promise.all([fetch("/api/product"), fetch("/api/data?collection=paymentMethods")]);
-
+        const productRes = await fetch("/api/product");
         const allProducts = await productRes.json();
-        const paymentData = await paymentRes.json();
 
         const ids = local.map((item) => item.productId);
         const filteredProducts = allProducts.filter((p) => ids.includes(p._id));
@@ -32,13 +28,9 @@ export default function useBuyNowProducts() {
         });
 
         setFetchedProducts(finalProducts);
-
-        const methods = paymentData?.[0]?.methods || {};
-        setPaymentMethods(methods);
       } catch (err) {
-        console.error("Error fetching data:", err);
+        console.error("Error fetching products:", err);
         setFetchedProducts([]);
-        setPaymentMethods({});
       } finally {
         setLoading(false);
       }
@@ -51,6 +43,5 @@ export default function useBuyNowProducts() {
   return {
     items: fetchedProducts,
     loading,
-    paymentMethods,
   };
 }

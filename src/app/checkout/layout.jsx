@@ -1,19 +1,9 @@
-import React from "react";
-import Script from "next/script";
+"use client"
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
 
-export const metadata = {
-  title: "Checkouts",
-  keywords: "checkouts, checkout, shopead, ecommerce, online store",
-  description: "Checkouts Page",
-};
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
 
-const Layout = ({ children }) => {
-  return (
-    <>
-      <Script src="https://checkout.razorpay.com/v1/checkout.js" />
-      {children}
-    </>
-  );
-};
-
-export default Layout;
+export default function CheckoutLayout({ children }) {
+  return <Elements stripe={stripePromise}>{children}</Elements>;
+}

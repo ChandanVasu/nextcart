@@ -1,9 +1,10 @@
 "use client";
 import React, { useState } from "react";
-import CheckoutBillingDetails from "./CheckoutBillingDetails";
-import CheckoutOrderSummary from "./CheckoutOrderSummary";
+import CheckoutBillingDetails from "./components/CheckoutBillingDetails";
+import CheckoutOrderSummary from "./components/CheckoutOrderSummary";
 
 export default function CheckoutPage() {
+  
   const [billingDetails, setBillingDetails] = useState({
     customer: { fullName: "", company: "", phone: "", email: "" },
     address: { country: "", address1: "", address2: "", city: "", state: "", zip: "" },

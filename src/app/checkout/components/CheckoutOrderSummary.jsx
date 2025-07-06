@@ -1,18 +1,10 @@
 "use client";
 import React, { useState } from "react";
-import { Button, Alert } from "@heroui/react";
-import ProductData from "./ProductData";
-import initPayment from "./gateway/doPayment";
+import ProductData from "./Product";
+import StripeCardForm from "./StripeCardForm";
 
 export default function CheckoutOrderSummary({ billingDetails, setErrors }) {
-  const { items: products, loading, paymentMethods } = ProductData();
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
-
-  const [orderCreatedLoading, setOrderCreatedLoading] = useState(false);
-
-  const doPayment = initPayment();
-
-  const activeMethods = Object.entries(paymentMethods || {}).filter(([, method]) => method.active);
+  const { items: products, loading } = ProductData();
 
   const costDetails = {
     subtotal: products.reduce((acc, p) => acc + Number(p.salePrice || p.regularPrice) * p.quantity, 0),
@@ -23,51 +15,31 @@ export default function CheckoutOrderSummary({ billingDetails, setErrors }) {
     },
   };
 
-  const validateBillingDetails = () => {
-    const newErrors = {};
+  // const validateBillingDetails = () => {
+  //   const newErrors = {};
 
-    if (!billingDetails.customer.fullName.trim()) {
-      newErrors.fullNameError = true;
-    }
+  //   if (!billingDetails.customer.fullName.trim()) {
+  //     newErrors.fullNameError = true;
+  //   }
 
-    if (!billingDetails.customer.email.trim()) {
-      newErrors.emailError = true;
-    }
+  //   if (!billingDetails.customer.email.trim()) {
+  //     newErrors.emailError = true;
+  //   }
 
-    if (!billingDetails.address.address1.trim()) {
-      newErrors.address1Error = true;
-    }
+  //   if (!billingDetails.address.address1.trim()) {
+  //     newErrors.address1Error = true;
+  //   }
 
-    if (!billingDetails.address.country.trim()) {
-      newErrors.countryError = true;
-    }
+  //   if (!billingDetails.address.country.trim()) {
+  //     newErrors.countryError = true;
+  //   }
 
-    if (!billingDetails.address.zip.trim()) {
-      newErrors.zipError = true;
-    }
+  //   if (!billingDetails.address.zip.trim()) {
+  //     newErrors.zipError = true;
+  //   }
 
-    return newErrors;
-  };
-
-  const doPaymentButtom = () => {
-    const validationErrors = validateBillingDetails();
-    setErrors(validationErrors);
-
-    if (Object.keys(validationErrors).length > 0) {
-      console.warn("Form has validation errors:", validationErrors);
-      return;
-    }
-
-    doPayment({
-      products,
-      setOrderCreatedLoading,
-      paymentDetails: {
-        paymentMethod: selectedPaymentMethod,
-        costDetails,
-      },
-      billingDetails,
-    });
-  };
+  //   return newErrors;
+  // };
 
   return (
     <div className="w-full md:w-2/5 rounded-2xl p-6 border border-indigo-100 h-min">
@@ -133,32 +105,18 @@ export default function CheckoutOrderSummary({ billingDetails, setErrors }) {
       {/* Payment Methods */}
       <div className="mt-5 space-y-4">
         <h1 className="text-sm font-semibold">Payment Method</h1>
-        {activeMethods.length > 0 ? (
-          <div className="grid md:grid-cols-2 gap-3">
-            {activeMethods.map(([id, method]) => (
-              <div
-                key={id}
-                onClick={() => setSelectedPaymentMethod(method)}
-                className={`flex items-center justify-between gap-3 cursor-pointer p-3 rounded-lg border transition ${
-                  selectedPaymentMethod.id === id ? "border-blue-400 bg-blue-50" : "border-gray-200"
-                }`}
-              >
-                <p className="text-base font-bold">{method.name}</p>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <Alert title="No active payment gateway available." />
-        )}
 
-        <Button
-          isDisabled={!selectedPaymentMethod || loading}
-          isLoading={orderCreatedLoading}
-          onPress={doPaymentButtom}
-          className="w-full bg-black text-white py-3 rounded-xl mt-5 hover:bg-indigo-700 transition duration-200 font-medium text-sm shadow"
-        >
-          Place Order
-        </Button>
+        <StripeCardForm
+          billingDetails={billingDetails}
+          amount={costDetails.total}
+          currency="USD"
+          onSuccess={(paymentIntent) => {
+            console.log("Payment successful:", paymentIntent);
+          }}
+          onError={(msg) => {
+            setErrors((prev) => ({ ...prev, paymentError: msg }));
+          }}
+        />
       </div>
     </div>
   );
