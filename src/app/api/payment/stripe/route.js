@@ -18,7 +18,14 @@ export async function POST(request) {
       amount: Math.round(amount * 100),
       currency,
       receipt_email: customer.email,
-      metadata: { integration_check: "custom_card_payment" },
+      metadata: {
+        integration_check: "custom_card_payment",
+      },
+      payment_method_options: {
+        card: {
+          request_three_d_secure: "any",
+        },
+      },
     });
 
     return NextResponse.json({ clientSecret: paymentIntent.client_secret });

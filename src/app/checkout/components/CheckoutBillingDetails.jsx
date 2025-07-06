@@ -27,7 +27,7 @@ export default function CheckoutBillingDetails({ billingDetails, setBillingDetai
           onChange={handleInputChange}
           placeholder="Enter your full name"
           labelPlacement="outside"
-          size="md"
+          size="sm"
           isInvalid={errors.fullNameError}
           errorMessage={errors.fullNameError ? "Full name is required" : ""}
         />
@@ -39,7 +39,7 @@ export default function CheckoutBillingDetails({ billingDetails, setBillingDetai
           onChange={handleInputChange}
           placeholder="Enter your email address"
           labelPlacement="outside"
-          size="md"
+          size="sm"
           isInvalid={errors.emailError}
           errorMessage={errors.emailError ? "Email address is required" : ""}
         />
@@ -51,7 +51,7 @@ export default function CheckoutBillingDetails({ billingDetails, setBillingDetai
           onChange={handleInputChange}
           placeholder="Enter your company name"
           labelPlacement="outside"
-          size="md"
+          size="sm"
         />
 
         <Input
@@ -61,7 +61,7 @@ export default function CheckoutBillingDetails({ billingDetails, setBillingDetai
           onChange={handleInputChange}
           placeholder="Enter your phone number"
           labelPlacement="outside"
-          size="md"
+          size="sm"
         />
 
         <Input
@@ -71,7 +71,7 @@ export default function CheckoutBillingDetails({ billingDetails, setBillingDetai
           onChange={handleInputChange}
           placeholder="Enter your country"
           labelPlacement="outside"
-          size="md"
+          size="sm"
           isInvalid={errors.countryError}
           errorMessage={errors.countryError ? "Country is required" : ""}
         />
@@ -83,7 +83,7 @@ export default function CheckoutBillingDetails({ billingDetails, setBillingDetai
           onChange={handleInputChange}
           placeholder="Enter your street address"
           labelPlacement="outside"
-          size="md"
+          size="sm"
           isInvalid={errors.address1Error}
           errorMessage={errors.address1Error ? "Address is required" : ""}
         />
@@ -95,7 +95,7 @@ export default function CheckoutBillingDetails({ billingDetails, setBillingDetai
           onChange={handleInputChange}
           placeholder="Enter address line 2 (optional)"
           labelPlacement="outside"
-          size="md"
+          size="sm"
         />
 
         <Input
@@ -105,7 +105,7 @@ export default function CheckoutBillingDetails({ billingDetails, setBillingDetai
           onChange={handleInputChange}
           placeholder="Enter your city"
           labelPlacement="outside"
-          size="md"
+          size="sm"
         />
 
         <Input
@@ -115,7 +115,7 @@ export default function CheckoutBillingDetails({ billingDetails, setBillingDetai
           onChange={handleInputChange}
           placeholder="Enter your state"
           labelPlacement="outside"
-          size="md"
+          size="sm"
         />
 
         <Input
@@ -125,7 +125,7 @@ export default function CheckoutBillingDetails({ billingDetails, setBillingDetai
           onChange={handleInputChange}
           placeholder="Enter your ZIP code"
           labelPlacement="outside"
-          size="md"
+          size="sm"
           isInvalid={errors.zipError}
           errorMessage={errors.zipError ? "ZIP code is required" : ""}
         />

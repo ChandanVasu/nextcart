@@ -1,7 +1,7 @@
 "use client";
-import React, { useState } from "react";
 import ProductData from "./Product";
 import StripeCardForm from "./StripeCardForm";
+import orderCreate from "./orderCreate";
 
 export default function CheckoutOrderSummary({ billingDetails, setErrors }) {
   const { items: products, loading } = ProductData();
@@ -14,32 +14,6 @@ export default function CheckoutOrderSummary({ billingDetails, setErrors }) {
       return this.subtotal + this.shipping + this.tax;
     },
   };
-
-  // const validateBillingDetails = () => {
-  //   const newErrors = {};
-
-  //   if (!billingDetails.customer.fullName.trim()) {
-  //     newErrors.fullNameError = true;
-  //   }
-
-  //   if (!billingDetails.customer.email.trim()) {
-  //     newErrors.emailError = true;
-  //   }
-
-  //   if (!billingDetails.address.address1.trim()) {
-  //     newErrors.address1Error = true;
-  //   }
-
-  //   if (!billingDetails.address.country.trim()) {
-  //     newErrors.countryError = true;
-  //   }
-
-  //   if (!billingDetails.address.zip.trim()) {
-  //     newErrors.zipError = true;
-  //   }
-
-  //   return newErrors;
-  // };
 
   return (
     <div className="w-full md:w-2/5 rounded-2xl p-6 border border-indigo-100 h-min">
@@ -102,20 +76,36 @@ export default function CheckoutOrderSummary({ billingDetails, setErrors }) {
         </div>
       </div>
 
-      {/* Payment Methods */}
       <div className="mt-5 space-y-4">
-        <h1 className="text-sm font-semibold">Payment Method</h1>
+        <h1 className="text-sm font-semibold">Payment</h1>
 
         <StripeCardForm
           billingDetails={billingDetails}
+          setErrors={setErrors}
           amount={costDetails.total}
-          currency="USD"
-          onSuccess={(paymentIntent) => {
-            console.log("Payment successful:", paymentIntent);
+          currency={process.env.NEXT_PUBLIC_STORE_CURRENCY || "USD"}
+          onSuccess={async (paymentIntent) => {
+            const orderId = await orderCreate({
+              products,
+              paymentDetails: {
+                paymentMethod: "stripe",
+                total: costDetails.total,
+                currency: process.env.NEXT_PUBLIC_STORE_CURRENCY || "USD",
+                currencySymbol: process.env.NEXT_PUBLIC_STORE_CURRENCY_SYMBOL || "$",
+                status: "paid",
+                ...paymentIntent,
+              },
+              billingDetails,
+            });
+
+            if (orderId) {
+              window.location.href = `/checkout/success?token=${orderId}`;
+            } else {
+              window.location.href = "/checkout/failure";
+              setErrors("Failed to create order after payment.");
+            }
           }}
-          onError={(msg) => {
-            setErrors((prev) => ({ ...prev, paymentError: msg }));
-          }}
+          onError={(msg) => {}}
         />
       </div>
     </div>

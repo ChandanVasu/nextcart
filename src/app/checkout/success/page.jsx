@@ -1,8 +1,13 @@
 "use client";
-import React from "react";
+
+import React, { Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { CheckCircle } from "lucide-react";
 
-export default function SuccessPage() {
+function SuccessContent() {
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token");
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-white px-4">
       <div className="bg-white rounded-2xl shadow-xl p-8 sm:p-12 max-w-md text-center space-y-6">
@@ -11,9 +16,9 @@ export default function SuccessPage() {
         <p className="text-gray-600">Thank you for your purchase! Your order has been confirmed.</p>
 
         <div className="bg-gray-100 rounded-xl p-4 text-left text-sm space-y-1">
-          <div className="flex justify-between">
+          <div className="flex justify-between gap-4">
             <span className="text-gray-500">Order ID:</span>
-            <span className="font-medium text-gray-800">#RZP12345678</span>
+            <span className="font-medium text-gray-800 line-clamp-1">#{token || "N/A"}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-gray-500">Status:</span>
@@ -29,5 +34,14 @@ export default function SuccessPage() {
         </button>
       </div>
     </div>
+  );
+}
+
+// Server component wrapper with Suspense
+export default function SuccessPageWrapper() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading success page...</div>}>
+      <SuccessContent />
+    </Suspense>
   );
 }

@@ -4,7 +4,6 @@ import CheckoutBillingDetails from "./components/CheckoutBillingDetails";
 import CheckoutOrderSummary from "./components/CheckoutOrderSummary";
 
 export default function CheckoutPage() {
-  
   const [billingDetails, setBillingDetails] = useState({
     customer: { fullName: "", company: "", phone: "", email: "" },
     address: { country: "", address1: "", address2: "", city: "", state: "", zip: "" },
@@ -13,7 +12,6 @@ export default function CheckoutPage() {
 
   const [errors, setErrors] = useState({});
 
-  console.log("Error State:", errors);
 
   return (
     <div className="container mx-auto px-4 md:px-20 my-14">
