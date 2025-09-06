@@ -86,26 +86,42 @@ export default function CheckoutOrderSummary({ billingDetails, setErrors }) {
           currency={process.env.NEXT_PUBLIC_STORE_CURRENCY || "USD"}
           onSuccess={async (paymentIntent) => {
             const orderId = await orderCreate({
-              products,
+              products: {
+                items: products.map((item) => ({
+                  productId: item._id,
+                  title: item.title,
+                  quantity: item.quantity,
+                  price: item.salePrice || item.regularPrice,
+                  sellingPrice: item.salePrice || item.regularPrice,
+                  regularPrice: item.regularPrice,
+                  images: item.images,
+                  currencySymbol: item.currencySymbol || "$",
+                  currencyCode: item.currencyCode || "USD",
+                  variants: item.variants || [],
+                })),
+              },
               paymentDetails: {
                 paymentMethod: "stripe",
                 total: costDetails.total,
                 currency: process.env.NEXT_PUBLIC_STORE_CURRENCY || "USD",
                 currencySymbol: process.env.NEXT_PUBLIC_STORE_CURRENCY_SYMBOL || "$",
                 status: "paid",
-                ...paymentIntent,
+                paymentIntentId: paymentIntent?.id,
+                paymentStatus: paymentIntent?.status,
               },
               billingDetails,
             });
 
             if (orderId) {
-              window.location.href = `/checkout/success?token=${orderId}`;
+              // window.location.href = `/checkout/success?token=${orderId}`;
             } else {
-              window.location.href = "/checkout/failure";
               setErrors("Failed to create order after payment.");
+              window.location.href = "/checkout/failure";
             }
           }}
-          onError={(msg) => {}}
+          onError={(msg) => {
+            setErrors(msg);
+          }}
         />
       </div>
     </div>

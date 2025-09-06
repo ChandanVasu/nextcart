@@ -1,132 +1,112 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { Button } from "@heroui/react";
-import { Switch } from "@heroui/switch";
 
-const collection = "paymentMethods";
+import { useEffect, useState } from "react";
+import { Table, TableHeader, TableBody, TableColumn, TableRow, TableCell, Pagination, Spinner } from "@heroui/react";
+import formatDate from "@/utils/formatDate";
+import Empty from "@/components/block/Empty";
 
-const paymentGateways = [
-  {
-    id: "razorpay",
-    name: "Razorpay",
-    logo: "/Razorpay_logo.svg",
-  },
-  {
-    id: "stripe",
-    name: "Stripe",
-    logo: "/stripe_logo.png",
-  },
-  {
-    id: "paypal",
-    name: "PayPal",
-    logo: "/PayPal.svg",
-  },
-  // {
-  //   id: "flutterwave",
-  //   name: "Flutterwave",
-  //   logo: "/Flutterwave.webp",
-  // },
-  // {
-  //   id: "cod",
-  //   name: "Cash on Delivery",
-  //   logo: "/COD.png",
-  // },
-];
+export default function PaymentTablePage() {
+  const [payments, setPayments] = useState([]);
+  const [page, setPage] = useState(1);
+  const [rowsPerPage] = useState(10);
+  const [loading, setLoading] = useState(true);
 
-const Payment = () => {
-  const [paymentMethods, setPaymentMethods] = useState({});
-  const [saveLoading, setSaveLoading] = useState(false);
-  const [configId, setConfigId] = useState(null);
+  const totalPages = Math.ceil(payments.length / rowsPerPage);
+  const paginatedPayments = payments.slice((page - 1) * rowsPerPage, page * rowsPerPage);
 
-  // Fetch existing settings
   useEffect(() => {
-    const fetchPaymentMethods = async () => {
-      try {
-        const res = await fetch(`/api/data?collection=${collection}`);
-        const data = await res.json();
-
-        if (Array.isArray(data) && data.length > 0) {
-          setPaymentMethods(data[0].methods || {});
-          setConfigId(data[0]._id);
-        }
-      } catch (err) {
-        console.error("Error fetching payment settings:", err);
-      }
-    };
-
-    fetchPaymentMethods();
+    fetchPayments();
   }, []);
 
-  const handleSwitchChange = (id, isSelected) => {
-    setPaymentMethods((prev) => ({
-      ...prev,
-      [id]: { active: isSelected },
-    }));
-  };
-
-  const handleSave = async () => {
-    setSaveLoading(true);
-
-    const updatedMethods = {};
-    for (const { id, name } of paymentGateways) {
-      updatedMethods[id] = {
-        id,
-        name,
-        active: !!paymentMethods[id]?.active,
-      };
-    }
-
-    const payload = {
-      collection,
-      methods: updatedMethods,
-    };
-
-    if (configId) {
-      payload._id = configId;
-    }
-
+  const fetchPayments = async () => {
     try {
-      const response = await fetch("/api/data", {
-        method: configId ? "PUT" : "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      const result = await response.json();
-
-      if (response.ok) {
-        setPaymentMethods(result.methods);
-        setConfigId(result._id || configId);
-      }
+      const res = await fetch("/api/order");
+      const data = await res.json();
+      setPayments(data || []);
     } catch (err) {
-      console.error("Save failed", err);
+      console.error("Failed to fetch payments:", err);
+    } finally {
+      setLoading(false);
     }
-
-    setSaveLoading(false);
   };
+
+  const getStatusColor = (status) => {
+    switch (status?.toLowerCase()) {
+      case "succeeded":
+      case "paid":
+        return "bg-green-100 text-green-700";
+      case "failed":
+        return "bg-red-100 text-red-700";
+      case "pending":
+        return "bg-yellow-100 text-yellow-700";
+      default:
+        return "bg-gray-100 text-gray-700";
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-[calc(100vh-45px)]">
+        <Spinner color="secondary" size="lg" />
+      </div>
+    );
+  }
 
   return (
-    <div className="p-4">
-      <header className="flex justify-between items-center">
+    <div className="px-5 py-3">
+      <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-lg md:text-xl font-bold">Payment Settings</h1>
-          <p className="text-xs md:text-sm text-gray-500">Enable or disable payment gateways to control what your customers can use.</p>
+          <h1 className="text-2xl font-bold text-gray-900">Payments</h1>
+          <p className="text-sm text-gray-500">Track all customer transactions and their status.</p>
         </div>
-        <Button isLoading={saveLoading} size="sm" className="bg-black text-white" onPress={handleSave}>
-          Save All Changes
-        </Button>
-      </header>
-
-      <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-        {paymentGateways.map(({ id, name, logo }) => (
-          <div key={id} className="bg-gray-100 p-4 mt-5 rounded-md flex justify-between items-center">
-            <img className="w-[150px] h-[30px]" src={logo} alt={name} />
-            <Switch size="sm" isSelected={!!paymentMethods[id]?.active} onValueChange={(isSelected) => handleSwitchChange(id, isSelected)} />
-          </div>
-        ))}
       </div>
+
+      {payments.length === 0 ? (
+        <Empty title="No Payments Found" description="There are no payment records available at the moment." />
+      ) : (
+        <div className="overflow-auto rounded-lg ">
+          <Table
+            aria-label="Colorful Payment Table"
+            shadow="none"
+            className="min-w-full bg-white"
+            bottomContent={
+              payments.length > rowsPerPage ? (
+                <div className="w-full flex justify-center mt-4 sticky bottom-0 bg-white py-2 z-10">
+                  <Pagination isCompact showControls showShadow color="secondary" page={page} total={totalPages} onChange={(page) => setPage(page)} />
+                </div>
+              ) : null
+            }
+          >
+            <TableHeader>
+              <TableColumn>Name</TableColumn>
+              <TableColumn>Email</TableColumn>
+              <TableColumn>Amount</TableColumn>
+              <TableColumn>Status</TableColumn>
+              <TableColumn>Method</TableColumn>
+              <TableColumn>Date</TableColumn>
+            </TableHeader>
+            <TableBody>
+              {paginatedPayments.map((order) => (
+                <TableRow key={order._id} className="hover:bg-gray-50 transition">
+                  <TableCell className="font-medium text-gray-800">{order.name}</TableCell>
+                  <TableCell className="text-gray-600">{order.email}</TableCell>
+                  <TableCell className="text-indigo-600 font-semibold">
+                    {order.paymentDetails?.currencySymbol}
+                    {order.paymentDetails?.total}
+                  </TableCell>
+                  <TableCell>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(order.paymentDetails?.paymentStatus)}`}>
+                      {order.paymentDetails?.paymentStatus}
+                    </span>
+                  </TableCell>
+                  <TableCell className="capitalize text-gray-700">{order.paymentDetails?.paymentMethod}</TableCell>
+                  <TableCell className="text-gray-500">{formatDate(order.createdAt)}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
     </div>
   );
-};
-
-export default Payment;
+}

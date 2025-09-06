@@ -32,8 +32,8 @@ const SideBar = () => {
     { href: "/admin/product/new", icon: <Plus size={18} />, label: "New Product" },
     { href: "/admin/collection", icon: <LayoutGrid size={18} />, label: "Collections" },
     { href: "/admin/payment", icon: <CreditCard size={18} />, label: "Payments" },
-    // { href: "/admin/post", icon: <FileText size={18} />, label: "Posts" },
-    // { href: "/admin/post/new", icon: <Plus size={18} />, label: "New Post" },
+    { href: "/admin/post", icon: <FileText size={18} />, label: "Posts" },
+    { href: "/admin/post/new", icon: <Plus size={18} />, label: "New Post" },
     { href: "/admin/orders", icon: <ShoppingCart size={18} />, label: "Orders" },
     // { href: "/admin/customers", icon: <Users size={18} />, label: "Customers" },
     { href: "/admin/menu", icon: <Menu size={18} />, label: "New Menu" },
@@ -41,7 +41,6 @@ const SideBar = () => {
     { href: "/admin/reel", icon: <Video size={18} />, label: "Reels" },
     { href: "/admin/news-latter", icon: <Mail size={18} />, label: "News Letter" },
     { href: "/admin/analytics", icon: <BarChart2 size={18} />, label: "Analytics" },
-    { href: "/admin/settings", icon: <Settings size={18} />, label: "Settings" },
   ];
 
   const handleLogout = async () => {
