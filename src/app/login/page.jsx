@@ -5,9 +5,9 @@ import { useRouter } from "next/navigation";
 import { Input, Button } from "@heroui/react";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("code@shopead.com");
-  const [password, setPassword] = useState("shopead.com");
-  const [formError, setFormError] = useState(""); // backend error
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [formError, setFormError] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
   const router = useRouter();

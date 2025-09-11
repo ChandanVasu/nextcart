@@ -16,10 +16,6 @@ function SuccessContent() {
         <p className="text-gray-600">Thank you for your purchase! Your order has been confirmed.</p>
 
         <div className="bg-gray-100 rounded-xl p-4 text-left text-sm space-y-1">
-          <div className="flex justify-between gap-4">
-            <span className="text-gray-500">Order ID:</span>
-            <span className="font-medium text-gray-800 line-clamp-1">#{token || "N/A"}</span>
-          </div>
           <div className="flex justify-between">
             <span className="text-gray-500">Status:</span>
             <span className="text-green-600 font-medium">Completed</span>
