@@ -22,7 +22,8 @@ export default function PaymentTablePage() {
     try {
       const res = await fetch("/api/order");
       const data = await res.json();
-      setPayments(data || []);
+      const filteredData = (data || []).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      setPayments(filteredData);
     } catch (err) {
       console.error("Failed to fetch payments:", err);
     } finally {
@@ -64,42 +65,56 @@ export default function PaymentTablePage() {
       {payments.length === 0 ? (
         <Empty title="No Payments Found" description="There are no payment records available at the moment." />
       ) : (
-        <div className="overflow-auto rounded-lg ">
+        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
           <Table
-            aria-label="Colorful Payment Table"
+            aria-label="Payment Table"
             shadow="none"
-            className="min-w-full bg-white"
+            className="min-w-full"
+            classNames={{
+              wrapper: "shadow-none bg-transparent",
+              th: "bg-gray-50 text-gray-700 font-semibold text-sm py-4 px-6 ",
+              td: "py-4 px-6 border-b border-gray-100 text-sm",
+              tbody: "bg-white",
+            }}
             bottomContent={
               payments.length > rowsPerPage ? (
-                <div className="w-full flex justify-center mt-4 sticky bottom-0 bg-white py-2 z-10">
+                <div className="w-full flex justify-center py-4 bg-white border-t border-gray-200">
                   <Pagination isCompact showControls showShadow color="secondary" page={page} total={totalPages} onChange={(page) => setPage(page)} />
                 </div>
               ) : null
             }
           >
             <TableHeader>
-              <TableColumn>Name</TableColumn>
-              <TableColumn>Email</TableColumn>
-              <TableColumn>Amount</TableColumn>
-              <TableColumn>Status</TableColumn>
-              <TableColumn>Method</TableColumn>
-              <TableColumn>Date</TableColumn>
+              <TableColumn>CUSTOMER NAME</TableColumn>
+              <TableColumn>EMAIL ADDRESS</TableColumn>
+              <TableColumn>AMOUNT</TableColumn>
+              <TableColumn>STATUS</TableColumn>
+              <TableColumn>PAYMENT METHOD</TableColumn>
+              <TableColumn>DATE</TableColumn>
             </TableHeader>
             <TableBody>
               {paginatedPayments.map((order) => (
-                <TableRow key={order._id} className="hover:bg-gray-50 transition">
-                  <TableCell className="font-medium text-gray-800">{order.name}</TableCell>
-                  <TableCell className="text-gray-600">{order.email}</TableCell>
-                  <TableCell className="text-indigo-600 font-semibold">
-                    {order.paymentDetails?.currencySymbol}
-                    {order.paymentDetails?.total}
-                  </TableCell>
-                  <TableCell>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(order.paymentDetails?.paymentStatus)}`}>
-                      {order.paymentDetails?.paymentStatus}
+                <TableRow key={order._id} className="hover:bg-gray-50/50 transition-colors">
+                  <TableCell className="font-medium text-gray-900">{order.name || "N/A"}</TableCell>
+                  <TableCell className="text-gray-600">{order.email || "N/A"}</TableCell>
+                  <TableCell className="font-semibold text-gray-900">
+                    <span className="">
+                      {order.paymentDetails?.currencySymbol || process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || "$"}
+                      {order.paymentDetails?.total?.toLocaleString() || "0"}
                     </span>
                   </TableCell>
-                  <TableCell className="capitalize text-gray-700">{order.paymentDetails?.paymentMethod}</TableCell>
+                  <TableCell>
+                    <span
+                      className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                        order.paymentDetails?.paymentStatus
+                      )}`}
+                    >
+                      {order.paymentDetails?.paymentStatus || "Unknown"}
+                    </span>
+                  </TableCell>
+                  <TableCell className="text-gray-700">
+                    <span className="capitalize">{order.paymentDetails?.paymentMethod || "N/A"}</span>
+                  </TableCell>
                   <TableCell className="text-gray-500">{formatDate(order.createdAt)}</TableCell>
                 </TableRow>
               ))}

@@ -16,7 +16,6 @@ export default function MenuPage() {
   const [title, setTitle] = useState("");
   const [url, setUrl] = useState("#");
   const [iconName, setIconName] = useState("home");
-  const [displayFor, setDisplayFor] = useState("both");
   const [badge, setBadge] = useState("");
   const [position, setPosition] = useState("");
 
@@ -68,11 +67,6 @@ export default function MenuPage() {
     "moon", // for Dark mode
   ];
 
-  const displayOptions = [
-    { label: "Desktop", value: "desktop" },
-    { label: "Mobile", value: "mobile" },
-    { label: "Both", value: "both" },
-  ];
   const fetchMenuItems = async () => {
     setIsFetching(true);
     try {
@@ -80,17 +74,6 @@ export default function MenuPage() {
       const data = await res.json();
       if (res.ok) {
         const sorted = data.sort((a, b) => {
-          const getDisplayRank = (displayFor) => {
-            if (displayFor === "desktop") return 0;
-            if (displayFor === "mobile") return 1;
-            return 2;
-          };
-
-          const rankA = getDisplayRank(a.displayFor);
-          const rankB = getDisplayRank(b.displayFor);
-
-          if (rankA !== rankB) return rankA - rankB;
-
           const posA = a.position ?? 9999;
           const posB = b.position ?? 9999;
           return posA - posB;
@@ -125,7 +108,6 @@ export default function MenuPage() {
         title,
         url,
         iconName,
-        displayFor,
         badge,
         position: parseInt(position) || 0,
       };
@@ -178,7 +160,6 @@ export default function MenuPage() {
     setTitle("");
     setUrl("");
     setIconName("home");
-    setDisplayFor("desktop");
     setBadge("");
     setPosition("");
     setSelectedId(null);
@@ -273,20 +254,6 @@ export default function MenuPage() {
                 </SelectItem>
               ))}
             </Select>
-            <Select
-              label="Display For"
-              selectedKeys={[displayFor]}
-              onSelectionChange={(key) => setDisplayFor(key.currentKey || "both")}
-              labelPlacement="outside"
-              placeholder="Select display option"
-              size="sm"
-            >
-              {displayOptions.map((opt) => (
-                <SelectItem key={opt.value} value={opt.value}>
-                  {opt.label}
-                </SelectItem>
-              ))}
-            </Select>
             <Button size="sm" className="bg-black text-white" onPress={createOrUpdate} disabled={loading}>
               {loading ? (selectedId ? "Updating..." : "Creating...") : selectedId ? "Update" : "Create"}
             </Button>
@@ -306,7 +273,6 @@ export default function MenuPage() {
                 <TableColumn>URL</TableColumn>
                 <TableColumn>Badge</TableColumn>
                 <TableColumn>Position</TableColumn>
-                <TableColumn>Display</TableColumn>
                 <TableColumn>Actions</TableColumn>
               </TableHeader>
               <TableBody>
@@ -321,7 +287,6 @@ export default function MenuPage() {
                       {item.badge ? <span className="px-2 py-1 text-xs rounded bg-gray-200 text-gray-800">{item.badge}</span> : "-"}
                     </TableCell>
                     <TableCell>{item.position ?? "-"}</TableCell>
-                    <TableCell className="capitalize">{item.displayFor || "desktop"}</TableCell>
                     <TableCell>
                       <div className="flex gap-2 items-center">
                         <span
@@ -330,7 +295,6 @@ export default function MenuPage() {
                             setTitle(item.title);
                             setUrl(item.url);
                             setIconName(item.iconName || "home");
-                            setDisplayFor(item.displayFor || "desktop");
                             setBadge(item.badge || "");
                             setPosition(item.position?.toString() || "");
                             setSelectedId(item._id);

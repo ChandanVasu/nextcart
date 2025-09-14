@@ -1,7 +1,4 @@
 import { v2 as cloudinary } from "cloudinary";
-import { writeFile } from "fs/promises";
-import path from "path";
-import { existsSync, mkdirSync } from "fs";
 import dbConnect from "@/lib/dbConnection";
 import mongoose from "mongoose";
 

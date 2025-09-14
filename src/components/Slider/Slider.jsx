@@ -47,9 +47,8 @@ export default function StyleOne() {
   }
 
   // Only show images for desktop (or remove this filter if you want to show all)
-  const filteredImages = images.filter((img) => img.displayFor === "desktop");
 
-  const showFallback = filteredImages.length === 0;
+  const showFallback = images.length === 0;
 
   return (
     <div className="w-full">
@@ -69,7 +68,7 @@ export default function StyleOne() {
             <img src="https://placehold.co/1200x600?text=No+Images+Available" alt="Placeholder" className="w-full h-full object-cover" />
           </SwiperSlide>
         ) : (
-          filteredImages.map((item, index) => (
+          images.map((item, index) => (
             <SwiperSlide key={item._id || index} className="p-4">
               <a href={item.url || "#"}>
                 <img src={item.image} alt={item.title || `Slide ${index + 1}`} className="w-full h-[150px] md:h-[500px] object-cover rounded-lg" />

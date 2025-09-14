@@ -17,32 +17,9 @@ export default function FullHeader() {
         const res = await fetch("/api/data?collection=menu-item");
         const data = await res.json();
         if (res.ok) {
-          // Prepare items with unique display positions
-          const prepareItems = (items) => {
-            const sorted = [...items].sort((a, b) => (a.position ?? 9999) - (b.position ?? 9999));
-            const seen = new Set();
-            const result = [];
-            let counter = 1;
-
-            for (const item of sorted) {
-              while (seen.has(counter)) counter++;
-              const current = item.position ?? counter;
-              const final = seen.has(current) ? counter : current;
-              seen.add(final);
-              result.push({ ...item, __finalPosition: final });
-              counter = final + 1;
-            }
-
-            return result.sort((a, b) => a.__finalPosition - b.__finalPosition);
-          };
-
-          const isMobile = (item) => item.displayFor === "mobile" || item.displayFor === "both";
-          const isDesktop = (item) => item.displayFor === "desktop" || item.displayFor === "both";
-
-          const mobileItems = prepareItems(data.filter(isMobile));
-          const desktopItems = prepareItems(data.filter(isDesktop));
-
-          setMenuItems({ mobile: mobileItems, desktop: desktopItems });
+          // Sort & clean positions
+          const sorted = [...data].sort((a, b) => (a.position ?? 9999) - (b.position ?? 9999));
+          setMenuItems(sorted);
         }
       } catch (err) {
         console.error("Failed to load menu items:", err);
@@ -59,22 +36,22 @@ export default function FullHeader() {
           <Link href={"/"}>
             <img src="/logonc.svg" alt="logo" />
           </Link>
+
           {/* Desktop Menu */}
           <nav className="hidden md:flex gap-4 items-center">
-            {menuItems?.desktop?.map(({ _id, title, url }) => (
+            {menuItems.map(({ _id, title, url }) => (
               <a key={_id} href={url} className="flex items-center gap-1 text-sm capitalize">
                 <p className="capitalize">{title}</p>
               </a>
             ))}
           </nav>
 
+          {/* Cart + Hamburger */}
           <div className="flex gap-1 items-center justify-end">
-            <button className="text-black text-xl p-2 cursor-pointer">
-              <Link href="/cart" className="text-black text-xl p-2 cursor-pointer">
-                <IoBagHandle />
-              </Link>
-            </button>
-            <button onClick={() => setMenuOpen(true)} className="text-black text-xl p-2 cursor-pointer">
+            <Link href="/cart" className="text-black text-xl p-2 cursor-pointer">
+              <IoBagHandle />
+            </Link>
+            <button onClick={() => setMenuOpen(true)} className="text-black text-xl p-2 cursor-pointer md:hidden">
               <RiMenu3Line />
             </button>
           </div>
@@ -110,7 +87,7 @@ export default function FullHeader() {
 
               {/* Mobile Menu List */}
               <div className="flex flex-col px-4 py-4 gap-3">
-                {menuItems?.mobile?.map(({ _id, title, url, iconName, badge }) => (
+                {menuItems.map(({ _id, title, url, iconName, badge }) => (
                   <a href={url} key={_id} className="flex items-center justify-between py-3 border-b" onClick={() => setMenuOpen(false)}>
                     <div className="flex items-center gap-3 text-gray-800 text-sm font-medium">
                       <span className="text-lg text-gray-600">
