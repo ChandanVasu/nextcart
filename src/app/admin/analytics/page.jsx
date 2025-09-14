@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Table, TableHeader, TableBody, TableColumn, TableRow, TableCell, Spinner } from "@heroui/react";
 import {
   HiOutlineUsers,
   HiOutlineShoppingBag,
@@ -59,7 +60,7 @@ export default function AnalyticsPage() {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-[calc(100vh-45px)]">
-        <div className="w-6 h-6 border-4 border-gray-300 border-t-black rounded-full animate-spin" />
+        <Spinner color="secondary" size="lg" />
       </div>
     );
   }
@@ -126,53 +127,49 @@ export default function AnalyticsPage() {
         <h3 className="text-lg font-semibold text-gray-800 mb-3">
           Recent Orders
         </h3>
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden border">
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50 text-gray-600 border-b">
-              <tr>
-                <th className="text-left px-4 py-2">Customer</th>
-                <th className="text-left px-4 py-2">Product</th>
-                <th className="text-left px-4 py-2">Amount</th>
-                <th className="text-left px-4 py-2">Status</th>
-                <th className="text-left px-4 py-2">Date</th>
-              </tr>
-            </thead>
-            <tbody>
+        <div className="overflow-auto">
+          <Table
+            shadow="none"
+            aria-label="Recent Orders Table"
+          >
+            <TableHeader>
+              <TableColumn>Customer</TableColumn>
+              <TableColumn>Product</TableColumn>
+              <TableColumn>Amount</TableColumn>
+              <TableColumn>Status</TableColumn>
+              <TableColumn>Date</TableColumn>
+            </TableHeader>
+            <TableBody emptyContent="No orders found">
               {recentOrders.map((o) => (
-                <tr key={o._id} className="border-t hover:bg-gray-50">
-                  <td className="px-4 py-2">{o.name}</td>
-                  <td className="px-4 py-2">
+                <TableRow key={o._id}>
+                  <TableCell className="font-medium">{o.name}</TableCell>
+                  <TableCell>
                     {o.products?.items?.[0]?.title || "-"}
-                  </td>
-                  <td className="px-4 py-2">
+                  </TableCell>
+                  <TableCell className="font-semibold">
                     {o.paymentDetails?.currencySymbol}
-                    {o.paymentDetails?.total}
-                  </td>
-                  <td className="px-4 py-2">
+                    {o.paymentDetails?.total?.toLocaleString() || "0"}
+                  </TableCell>
+                  <TableCell>
                     <span
-                      className={`px-2 py-1 rounded text-xs ${
-                        o.paymentDetails?.status === "paid"
+                      className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
+                        o.paymentDetails?.paymentStatus === "succeeded" || o.paymentDetails?.paymentStatus === "paid"
                           ? "bg-green-100 text-green-700"
+                          : o.paymentDetails?.paymentStatus === "failed"
+                          ? "bg-red-100 text-red-700"
                           : "bg-yellow-100 text-yellow-700"
                       }`}
                     >
-                      {o.paymentDetails?.status}
+                      {o.paymentDetails?.paymentStatus || "Unknown"}
                     </span>
-                  </td>
-                  <td className="px-4 py-2 text-gray-500 text-xs">
+                  </TableCell>
+                  <TableCell className="text-gray-500 text-xs">
                     {new Date(o.createdAt).toLocaleDateString()}
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ))}
-              {recentOrders.length === 0 && (
-                <tr>
-                  <td colSpan={5} className="text-center py-4 text-gray-500">
-                    No orders found
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
       </div>
     </div>
@@ -182,20 +179,20 @@ export default function AnalyticsPage() {
 /* ---- Reusable StatCard ---- */
 function StatCard({ title, value, icon, color }) {
   const colors = {
-    indigo: "from-indigo-50 to-indigo-100 text-indigo-600",
-    green: "from-green-50 to-green-100 text-green-600",
-    pink: "from-pink-50 to-pink-100 text-pink-600",
+    indigo: "text-indigo-600",
+    green: "text-green-600", 
+    pink: "text-pink-600",
   };
 
   return (
-    <div
-      className={`bg-gradient-to-br ${colors[color]} p-5 rounded-xl shadow-sm border`}
-    >
-      <div className="flex items-center gap-2 mb-2 text-sm font-medium">
-        <span className="text-lg">{icon}</span>
-        {title}
+    <div className="bg-white p-6 rounded-lg border border-gray-200 hover:border-gray-300 transition-colors">
+      <div className="flex items-center justify-between mb-3">
+        <span className={`${colors[color]} text-xl`}>{icon}</span>
       </div>
-      <h2 className="text-2xl font-bold">{value}</h2>
+      <div>
+        <p className="text-sm text-gray-600 mb-1">{title}</p>
+        <h2 className="text-2xl font-bold text-gray-900">{value}</h2>
+      </div>
     </div>
   );
 }

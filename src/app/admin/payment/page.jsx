@@ -65,32 +65,25 @@ export default function PaymentTablePage() {
       {payments.length === 0 ? (
         <Empty title="No Payments Found" description="There are no payment records available at the moment." />
       ) : (
-        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+        <div className="overflow-auto">
           <Table
-            aria-label="Payment Table"
             shadow="none"
-            className="min-w-full"
-            classNames={{
-              wrapper: "shadow-none bg-transparent",
-              th: "bg-gray-50 text-gray-700 font-semibold text-sm py-4 px-6 ",
-              td: "py-4 px-6 border-b border-gray-100 text-sm",
-              tbody: "bg-white",
-            }}
+            aria-label="Payment Table"
             bottomContent={
               payments.length > rowsPerPage ? (
-                <div className="w-full flex justify-center py-4 bg-white border-t border-gray-200">
+                <div className="w-full flex justify-center mt-4 sticky bottom-0 bg-white py-2 z-10">
                   <Pagination isCompact showControls showShadow color="secondary" page={page} total={totalPages} onChange={(page) => setPage(page)} />
                 </div>
               ) : null
             }
           >
             <TableHeader>
-              <TableColumn>CUSTOMER NAME</TableColumn>
-              <TableColumn>EMAIL ADDRESS</TableColumn>
-              <TableColumn>AMOUNT</TableColumn>
-              <TableColumn>STATUS</TableColumn>
-              <TableColumn>PAYMENT METHOD</TableColumn>
-              <TableColumn>DATE</TableColumn>
+              <TableColumn>Customer Name</TableColumn>
+              <TableColumn>Email Address</TableColumn>
+              <TableColumn>Amount</TableColumn>
+              <TableColumn>Status</TableColumn>
+              <TableColumn>Payment Method</TableColumn>
+              <TableColumn>Date</TableColumn>
             </TableHeader>
             <TableBody>
               {paginatedPayments.map((order) => (
