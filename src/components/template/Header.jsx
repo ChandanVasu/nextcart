@@ -79,7 +79,7 @@ export default function FullHeader() {
             >
               {/* Banner */}
               <div className="relative w-full">
-                <img src="https://www.beyoung.in/api/catalog/Birthday2025/login-sing-up-mobile-10-jun.jpg" alt="Banner" className="w-full h-auto" />
+                <img src="/menu_banner.jpg" alt="Banner" className="w-full h-auto" />
                 <button onClick={() => setMenuOpen(false)} className="absolute top-2 right-2 text-white text-xl cursor-pointer">
                   ×
                 </button>
