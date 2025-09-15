@@ -43,7 +43,7 @@ export default function CheckoutOrderSummary({ billingDetails, setErrors }) {
                 </div>
               </div>
               <div className="text-right font-medium text-gray-900">
-                {item.currencySymbol || "$"}
+                {process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || "$"}
                 {(item.salePrice || item.regularPrice) * item.quantity}
               </div>
             </div>
@@ -56,21 +56,21 @@ export default function CheckoutOrderSummary({ billingDetails, setErrors }) {
         <div className="flex justify-between">
           <span>Subtotal</span>
           <span>
-            {products[0]?.currencySymbol || "$"}
+            {process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || "$"}
             {costDetails.subtotal.toFixed(2)}
           </span>
         </div>
         <div className="flex justify-between">
           <span>Shipping</span>
           <span>
-            {products[0]?.currencySymbol || "$"}
+            {process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || "$"}
             {costDetails.shipping.toFixed(2)}
           </span>
         </div>
         <div className="flex justify-between font-bold text-gray-900 text-base">
           <span>Total</span>
           <span>
-            {products[0]?.currencySymbol || "$"}
+            {process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || "$"}
             {costDetails.total.toFixed(2)}
           </span>
         </div>

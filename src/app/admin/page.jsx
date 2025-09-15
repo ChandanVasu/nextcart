@@ -46,8 +46,7 @@ export default function AnalyticsPage() {
     (sum, o) => sum + (o.paymentDetails?.total || 0),
     0
   );
-  const currencySymbol =
-    filteredOrders[0]?.paymentDetails?.currencySymbol || "$";
+  const currencySymbol = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || "$";
   const uniqueCustomers = new Set(filteredOrders.map((o) => o.email)).size;
 
   const recentOrders = filteredOrders.slice(0, 5);

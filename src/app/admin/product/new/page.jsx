@@ -24,27 +24,6 @@ function ProductForm() {
   const [selectedImages, setSelectedImages] = useState([]);
   const [isFetching, setIsFetching] = useState(false);
 
-  const [currencyCode, setCurrencyCode] = useState("USD");
-  const [currencySymbol, setCurrencySymbol] = useState("$");
-
-  useEffect(() => {
-    const fetchCurrency = async () => {
-      try {
-        const res = await fetch("/api/setting");
-        const data = await res.json();
-
-        if (data) {
-          setCurrencyCode(data.currencyCode || "");
-          setCurrencySymbol(data.currencySymbol || "");
-        }
-      } catch (err) {
-        console.error("❌ Failed to fetch currency:", err);
-      }
-    };
-
-    fetchCurrency();
-  }, []);
-
   const [variantInput, setVariantInput] = useState({ name: "", options: "" });
 
   const fetchCollection = async () => {
@@ -169,8 +148,6 @@ function ProductForm() {
         body: JSON.stringify({
           ...(isUpdate && { _id: productId }),
           ...productData,
-          currencyCode,
-          currencySymbol,
           collections: Array.from(categories),
           images: selectedImages,
         }),
@@ -255,7 +232,7 @@ function ProductForm() {
               size="sm"
               type="number"
               isDisabled={isFetching}
-              startContent={<span>{currencySymbol}</span>}
+              startContent={<span>{process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || "$"}</span>}
               placeholder="Enter regular price"
               value={productData.regularPrice}
               isInvalid={isInvalid && !productData.regularPrice}
@@ -268,7 +245,7 @@ function ProductForm() {
               size="sm"
               isDisabled={isFetching}
               type="number"
-              startContent={<span>{currencySymbol}</span>}
+              startContent={<span>{process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || "$"}</span>}
               placeholder="Enter sale price"
               value={productData.salePrice}
               onChange={(e) => setProductData({ ...productData, salePrice: e.target.value })}
