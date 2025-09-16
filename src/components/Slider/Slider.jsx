@@ -65,7 +65,7 @@ export default function StyleOne() {
       >
         {showFallback ? (
           <SwiperSlide>
-            <img src="https://placehold.co/1200x600?text=No+Images+Available" alt="Placeholder" className="w-full h-full object-cover" />
+            <img src="https://placehold.co/1200x600?text=No+Images+Available" alt="Placeholder" className="w-full h-[150px] md:h-[500px] object-cover rounded-lg m-4" />
           </SwiperSlide>
         ) : (
           images.map((item, index) => (
